@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foreclosure Lag Tracker</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FAFAF8;
+      --card: #ffffff;
+      --border: #E8E5E0;
+      --border-strong: #D5D0C8;
+      --accent: #D8A7B1;
+      --accent-bg: #F7ECE9;
+      --ink: #1B1B1B;
+      --muted: #6B6F72;
+      --green: #66BB6A;
+      --green-bg: #E8F5E9;
+      --amber: #FFB74D;
+      --amber-bg: #FFF8E1;
+      --red: #C62828;
+      --red-bg: #FFEBEE;
+      --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      background: var(--ink);
+      color: #fff;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      font-weight: 400;
+    }
+    .header-sub {
+      font-size: 0.82rem;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    /* Section title */
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+      color: var(--ink);
+      font-weight: 400;
+    }
+    .section-title .count {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    /* Select */
+    select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      background: var(--card);
+      cursor: pointer;
+      width: 100%;
+      max-width: 320px;
+      color: var(--ink);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 14px 0;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-primary.saved { background: var(--green); }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--ink); }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--red);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .btn-delete:hover { background: var(--red-bg); }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Card label */
+    .card-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* External link */
+    .ext-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .ext-link:hover { color: var(--ink); }
+
+    /* Instructions */
+    .instruction {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .step-num {
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Form elements */
+    .input-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 14px;
+      display: block;
+    }
+    input[type="date"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      margin-top: 6px;
+      color: var(--ink);
+    }
+    input[type="date"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(216, 167, 177, 0.15);
+    }
+    textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-family: var(--font-body);
+      margin-top: 6px;
+      resize: vertical;
+      color: var(--ink);
+    }
+
+    /* Lag display */
+    .lag-display {
+      text-align: center;
+      padding: 28px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      border-width: 2px;
+      border-style: solid;
+    }
+    .lag-num {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+    .lag-label {
+      font-size: 0.9rem;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    .lag-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Preview */
+    .lag-preview {
+      text-align: center;
+      padding: 12px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* Table */
+    .table-wrap { overflow: hidden; padding: 0; }
+    .table-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 70px 50px;
+      gap: 8px;
+      padding: 12px 16px;
+      align-items: center;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #F0EDE8;
+    }
+    .table-header {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      background: var(--bg);
+      border-bottom: 2px solid var(--border);
+    }
+    .table-row:last-child { border-bottom: none; }
+    .row-notes {
+      padding: 4px 16px 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .table-row { grid-template-columns: 1fr 1fr 1fr 60px 40px; font-size: 0.8rem; padding: 10px 12px; }
+    }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    /* Methodology */
+    .methodology p {
+      margin: 0 0 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .methodology p:last-child { margin-bottom: 0; }
+    .methodology strong { color: var(--ink); }
+
+    /* Error */
+    .error-msg {
+      color: var(--red);
+      font-size: 0.88rem;
+      padding: 8px 0;
+      font-weight: 500;
+    }
+
+    /* SVG chart */
+    .chart-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .chart-wrap svg {
+      width: 100%;
+      max-width: 700px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Fade in animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Foreclosure Lag Tracker</h1>
+      <div class="header-sub">County vs. PropertyRadar Data Freshness</div>
+    </div>
+  </div>
+
+  <div class="container" id="app">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <select id="countySelect"></select>
+      <div style="flex:1"></div>
+      <button class="btn-secondary" onclick="exportData()">Export</button>
+      <button class="btn-secondary" onclick="document.getElementById('importFile').click()">Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+    </div>
+
+    <!-- Lag Display (latest) -->
+    <div id="lagDisplay" style="display:none"></div>
+
+    <!-- New Check Form -->
+    <h2 class="section-title">New Check</h2>
+    <div class="grid-2" id="formCards"></div>
+
+    <!-- Notes -->
+    <div class="card">
+      <label class="input-label">Notes (optional)</label>
+      <textarea id="notesInput" rows="2" placeholder="Any observations about this check..."></textarea>
+    </div>
+
+    <!-- Error -->
+    <div id="errorMsg" class="error-msg" style="display:none"></div>
+
+    <!-- Submit -->
+    <button class="btn-primary" id="submitBtn" onclick="handleSubmit()">Calculate &amp; Save</button>
+
+    <!-- Preview -->
+    <div id="lagPreview" class="lag-preview" style="display:none"></div>
+
+    <!-- Trend Chart -->
+    <div id="chartSection" style="display:none; margin-top:36px">
+      <h2 class="section-title" id="chartTitle">Lag Trend</h2>
+      <div class="card">
+        <div class="chart-wrap" id="chartWrap"></div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div style="margin-top:36px">
+      <h2 class="section-title" id="historyTitle">Check History <span class="count">(0 records)</span></h2>
+      <div id="historyContent"></div>
+    </div>
+
+    <!-- Methodology -->
+    <div style="margin-top:36px">
+      <h2 class="section-title">Methodology</h2>
+      <div class="card methodology">
+        <p><strong>1.</strong> Get the latest entry from the county recorder source and note the <strong>Notice Recording Date</strong>.</p>
+        <p><strong>2.</strong> Go to PropertyRadar and filter by <strong>FCL Recording Date (descending)</strong>. Note the latest entry.</p>
+        <p><strong>3.</strong> Lag Time = County Notice Recording Date &minus; PR FCL Recording Date (in days). A positive value means PropertyRadar is behind the county source.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ─── County Config ────────────────────────────────────────
+const COUNTIES = [
+  {
+    id: "maricopa-az",
+    name: "Maricopa County",
+    state: "AZ",
+    countySource: {
+      label: "Maricopa County Recorder (Legacy Site)",
+      url: "https://legacy.recorder.maricopa.gov/recdocdata/",
+      instructions: [
+        'Open the legacy recorder search page (link above)',
+        'Select Document Code: "NOTICE OF TRUSTEES SALE"',
+        'Set Begin Date to ~30 days ago and End Date to today',
+        'Click Search — results appear sorted by recording date',
+        'Find the most recent Notice Recording Date and enter it below',
+      ],
+      dateFieldLabel: "Latest Notice Recording Date (County)",
+    },
+    prSource: {
+      label: "PropertyRadar",
+      url: "https://app.propertyradar.com",
+      instructions: [
+        'Open PropertyRadar (link above) and go to Discover',
+        'Set location to Maricopa County, AZ',
+        'Add criteria: Foreclosure → In Foreclosure = Yes',
+        'Switch to Grid view and add "Notice Recording Date" column',
+        'Sort by Notice Recording Date descending (newest first)',
+        'Enter the latest FCL Recording Date below',
+      ],
+      dateFieldLabel: "Latest FCL Recording Date (PropertyRadar)",
+    },
+  },
+];
+
+// ─── Storage ──────────────────────────────────────────────
+const STORAGE_KEY = "fcl-lag-checks";
+const COUNTY_KEY = "fcl-lag-county";
+
+function loadChecks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveChecks(checks) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
+  } catch (e) { console.error("Save failed:", e); }
+}
+
+function loadSelectedCounty() {
+  try {
+    return localStorage.getItem(COUNTY_KEY) || COUNTIES[0].id;
+  } catch { return COUNTIES[0].id; }
+}
+
+function saveSelectedCounty(id) {
+  try { localStorage.setItem(COUNTY_KEY, id); } catch {}
+}
+
+// ─── State ────────────────────────────────────────────────
+let checks = loadChecks();
+let selectedCountyId = loadSelectedCounty();
+
+function getCounty() {
+  return COUNTIES.find(c => c.id === selectedCountyId) || COUNTIES[0];
+}
+
+function getCountyChecks() {
+  return checks.filter(c => c.countyId === selectedCountyId);
+}
+
+// ─── Helpers ──────────────────────────────────────────────
+function formatDatePST(dateStr) {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", year: "numeric" });
+}
+
+function formatTimestampPST(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function calcLag(countyDate, prDate) {
+  return Math.round((new Date(countyDate + "T00:00:00") - new Date(prDate + "T00:00:00")) / 86400000);
+}
+
+function lagColor(days) {
+  if (days <= 3) return "var(--green)";
+  if (days <= 7) return "var(--amber)";
+  return "var(--red)";
+}
+
+function lagBg(days) {
+  if (days <= 3) return "var(--green-bg)";
+  if (days <= 7) return "var(--amber-bg)";
+  return "var(--red-bg)";
+}
+
+function lagColorHex(days) {
+  if (days <= 3) return "#66BB6A";
+  if (days <= 7) return "#FFB74D";
+  return "#C62828";
+}
+
+// ─── Render: County Selector ──────────────────────────────
+function renderCountySelector() {
+  const sel = document.getElementById("countySelect");
+  sel.innerHTML = COUNTIES.map(c =>
+    `<option value="${c.id}" ${c.id === selectedCountyId ? "selected" : ""}>${c.name}, ${c.state}</option>`
+  ).join("");
+  sel.onchange = (e) => {
+    selectedCountyId = e.target.value;
+    saveSelectedCounty(selectedCountyId);
+    renderAll();
+  };
+}
+
+// ─── Render: Form Cards ──────────────────────────────────
+function renderFormCards() {
+  const county = getCounty();
+  const src = county.countySource;
+  const pr = county.prSource;
+
+  function makeCard(stepLabel, source, inputId) {
+    const steps = source.instructions.map((inst, i) =>
+      `<div class="instruction"><span class="step-num">${i + 1}</span><span>${inst}</span></div>`
+    ).join("");
+    return `
+      <div class="card">
+        <div class="card-label">
+          ${stepLabel}: ${source.label}
+          <a href="${source.url}" target="_blank" rel="noopener noreferrer" class="ext-link">Open ↗</a>
+        </div>
+        ${steps}
+        <label class="input-label">${source.dateFieldLabel}</label>
+        <input type="date" id="${inputId}" oninput="updatePreview()" />
+      </div>
+    `;
+  }
+
+  document.getElementById("formCards").innerHTML =
+    makeCard("Step 1", src, "countyDateInput") +
+    makeCard("Step 2", pr, "prDateInput");
+}
+
+// ─── Render: Lag Display ──────────────────────────────────
+function renderLagDisplay() {
+  const cc = getCountyChecks();
+  const el = document.getElementById("lagDisplay");
+  if (cc.length === 0) {
+    el.style.display = "none";
+    return;
+  }
+  const latest = cc[0];
+  const county = getCounty();
+  const color = lagColor(latest.lagDays);
+  const bg = lagBg(latest.lagDays);
+  const abs = Math.abs(latest.lagDays);
+  const plural = abs !== 1 ? "s" : "";
+  const label = latest.lagDays >= 0
+    ? `PropertyRadar is ${latest.lagDays} day${plural} behind ${county.name}`
+    : `PropertyRadar is ${abs} day${plural} ahead of ${county.name} (unusual)`;
+
+  el.style.display = "block";
+  el.className = "lag-display fade-in";
+  el.style.background = bg;
+  el.style.borderColor = color;
+  el.innerHTML = `
+    <div class="lag-num" style="color:${color}">${latest.lagDays}</div>
+    <div class="lag-label" style="color:${color}">${label}</div>
+    <div class="lag-meta">Last checked ${formatTimestampPST(latest.checkedAt)}</div>
+  `;
+}
+
+// ─── Render: Chart ────────────────────────────────────────
+function renderChart() {
+  const cc = getCountyChecks();
+  const section = document.getElementById("chartSection");
+  const county = getCounty();
+  document.getElementById("chartTitle").textContent = `Lag Trend — ${county.name}`;
+
+  if (cc.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
+
+  const data = [...cc].reverse().slice(-30); // oldest to newest, last 30
+  const PAD = { top: 28, right: 20, bottom: 44, left: 44 };
+  const W = 700, H = 260;
+  const IW = W - PAD.left - PAD.right;
+  const IH = H - PAD.top - PAD.bottom;
+
+  const maxLag = Math.max(...data.map(d => d.lagDays), 7);
+  const yMax = Math.ceil(maxLag / 5) * 5 || 10;
+  const yTicks = [];
+  const step = Math.max(1, Math.ceil(yMax / 5));
+  for (let i = 0; i <= yMax; i += step) yTicks.push(i);
+
+  function xP(i) { return data.length === 1 ? PAD.left + IW / 2 : PAD.left + (i / (data.length - 1)) * IW; }
+  function yP(v) { return PAD.top + IH - (v / yMax) * IH; }
+
+  const thresholds = [
+    { days: 3, color: "#66BB6A", label: "3d" },
+    { days: 7, color: "#FFB74D", label: "7d" },
+  ];
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}">`;
+
+  // Y grid
+  yTicks.forEach(t => {
+    svg += `<line x1="${PAD.left}" y1="${yP(t)}" x2="${W - PAD.right}" y2="${yP(t)}" stroke="#E8E5E0" stroke-dasharray="4 4"/>`;
+    svg += `<text x="${PAD.left - 8}" y="${yP(t) + 4}" text-anchor="end" font-size="11" fill="#6B6F72" font-family="DM Sans, sans-serif">${t}d</text>`;
+  });
+
+  // Thresholds
+  thresholds.forEach(t => {
+    if (t.days <= yMax) {
+      svg += `<line x1="${PAD.left}" y1="${yP(t.days)}" x2="${W - PAD.right}" y2="${yP(t.days)}" stroke="${t.color}" stroke-dasharray="6 3" stroke-width="1.5" opacity="0.5"/>`;
+      svg += `<text x="${W - PAD.right + 4}" y="${yP(t.days) + 4}" font-size="10" fill="${t.color}" font-family="DM Sans, sans-serif">${t.label}</text>`;
+    }
+  });
+
+  // X labels
+  const labelStep = Math.max(1, Math.floor(data.length / 8));
+  data.forEach((d, i) => {
+    if (i % labelStep === 0) {
+      const dt = new Date(d.checkedAt);
+      const lbl = `${dt.getMonth() + 1}/${dt.getDate()}`;
+      svg += `<text x="${xP(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#6B6F72" font-family="DM Sans, sans-serif">${lbl}</text>`;
+    }
+  });
+
+  // Line
+  const path = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xP(i)} ${yP(d.lagDays)}`).join(" ");
+  svg += `<path d="${path}" fill="none" stroke="#D8A7B1" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  // Dots + labels
+  data.forEach((d, i) => {
+    const c = lagColorHex(d.lagDays);
+    svg += `<circle cx="${xP(i)}" cy="${yP(d.lagDays)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+    svg += `<text x="${xP(i)}" y="${yP(d.lagDays) - 10}" text-anchor="middle" font-size="10" font-weight="600" fill="#1B1B1B" font-family="DM Sans, sans-serif">${d.lagDays}</text>`;
+  });
+
+  // Y-axis label
+  svg += `<text x="14" y="${PAD.top + IH / 2}" text-anchor="middle" font-size="11" fill="#6B6F72" font-family="DM Sans, sans-serif" transform="rotate(-90, 14, ${PAD.top + IH / 2})">Lag (days)</text>`;
+  svg += `</svg>`;
+
+  document.getElementById("chartWrap").innerHTML = svg;
+}
+
+// ─── Render: History ──────────────────────────────────────
+function renderHistory() {
+  const cc = getCountyChecks();
+  const titleEl = document.getElementById("historyTitle");
+  titleEl.innerHTML = `Check History <span class="count">(${cc.length} record${cc.length !== 1 ? "s" : ""})</span>`;
+
+  const content = document.getElementById("historyContent");
+  if (cc.length === 0) {
+    const county = getCounty();
+    content.innerHTML = `<div class="empty">No checks yet for ${county.name}. Use the form above to record your first lag check.</div>`;
+    return;
+  }
+
+  let html = `<div class="card table-wrap">`;
+  html += `<div class="table-row table-header"><span>Checked</span><span>County Date</span><span>PR Date</span><span>Lag</span><span></span></div>`;
+  cc.forEach(check => {
+    const color = lagColor(check.lagDays);
+    html += `<div class="table-row">
+      <span style="font-size:0.84rem">${formatTimestampPST(check.checkedAt)}</span>
+      <span>${formatDatePST(check.countyDate)}</span>
+      <span>${formatDatePST(check.prDate)}</span>
+      <span style="font-weight:700;color:${color}">${check.lagDays}d</span>
+      <button class="btn-delete" onclick="deleteCheck('${check.id}')" title="Delete">✕</button>
+    </div>`;
+    if (check.notes) {
+      html += `<div class="row-notes">${escHtml(check.notes)}</div>`;
+    }
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+function escHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ─── Preview ──────────────────────────────────────────────
+function updatePreview() {
+  const cd = document.getElementById("countyDateInput")?.value;
+  const pd = document.getElementById("prDateInput")?.value;
+  const el = document.getElementById("lagPreview");
+  if (cd && pd) {
+    const lag = calcLag(cd, pd);
+    const plural = Math.abs(lag) !== 1 ? "s" : "";
+    el.style.display = "block";
+    el.style.color = lagColor(lag);
+    el.textContent = `Lag preview: ${lag} day${plural}`;
+  } else {
+    el.style.display = "none";
+  }
+}
+
+// ─── Actions ──────────────────────────────────────────────
+function handleSubmit() {
+  const errorEl = document.getElementById("errorMsg");
+  errorEl.style.display = "none";
+
+  const cd = document.getElementById("countyDateInput").value;
+  const pd = document.getElementById("prDateInput").value;
+  const notes = document.getElementById("notesInput").value.trim();
+
+  if (!cd) { errorEl.textContent = "Please enter the county recording date."; errorEl.style.display = "block"; return; }
+  if (!pd) { errorEl.textContent = "Please enter the PropertyRadar date."; errorEl.style.display = "block"; return; }
+
+  const lag = calcLag(cd, pd);
+  const newCheck = {
+    id: "check-" + Date.now(),
+    countyId: selectedCountyId,
+    countyDate: cd,
+    prDate: pd,
+    lagDays: lag,
+    checkedAt: new Date().toISOString(),
+    notes: notes,
+  };
+
+  checks.unshift(newCheck);
+  saveChecks(checks);
+
+  // Reset form
+  document.getElementById("countyDateInput").value = "";
+  document.getElementById("prDateInput").value = "";
+  document.getElementById("notesInput").value = "";
+  document.getElementById("lagPreview").style.display = "none";
+
+  // Flash button
+  const btn = document.getElementById("submitBtn");
+  btn.classList.add("saved");
+  btn.textContent = "✓ Saved";
+  setTimeout(() => {
+    btn.classList.remove("saved");
+    btn.textContent = "Calculate & Save";
+  }, 2500);
+
+  renderLagDisplay();
+  renderChart();
+  renderHistory();
+}
+
+function deleteCheck(id) {
+  checks = checks.filter(c => c.id !== id);
+  saveChecks(checks);
+  renderLagDisplay();
+  renderChart();
+  renderHistory();
+}
+
+function exportData() {
+  const data = { "fcl-lag-checks": checks };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `fcl-lag-backup-${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data["fcl-lag-checks"]) {
+        checks = data["fcl-lag-checks"];
+        saveChecks(checks);
+        renderAll();
+      } else {
+        alert("No lag tracker data found in this file.");
+      }
+    } catch {
+      alert("Invalid backup file.");
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
+
+// ─── Render All ───────────────────────────────────────────
+function renderAll() {
+  renderCountySelector();
+  renderFormCards();
+  renderLagDisplay();
+  renderChart();
+  renderHistory();
+}
+
+// ─── Init ─────────────────────────────────────────────────
+renderAll();
+</script>
+
+</body>
+</html>
