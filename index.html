@@ -7,833 +7,676 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#FAFAF8;--card:#fff;--border:#E8E5E0;--accent:#D8A7B1;--accent-bg:#F7ECE9;--ink:#1B1B1B;--muted:#6B6F72;--green:#66BB6A;--green-bg:#E8F5E9;--amber:#FFB74D;--amber-bg:#FFF8E1;--red:#C62828;--red-bg:#FFEBEE;--font:'DM Sans',-apple-system,sans-serif;--heading:'DM Serif Display',Georgia,serif;--r:12px;--rs:8px}
+    body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
 
-    :root {
-      --bg: #FAFAF8;
-      --card: #ffffff;
-      --border: #E8E5E0;
-      --border-strong: #D5D0C8;
-      --accent: #D8A7B1;
-      --accent-bg: #F7ECE9;
-      --ink: #1B1B1B;
-      --muted: #6B6F72;
-      --green: #66BB6A;
-      --green-bg: #E8F5E9;
-      --amber: #FFB74D;
-      --amber-bg: #FFF8E1;
-      --red: #C62828;
-      --red-bg: #FFEBEE;
-      --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-heading: 'DM Serif Display', Georgia, serif;
-      --radius: 12px;
-      --radius-sm: 8px;
-    }
+    .hdr{background:var(--ink);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:12px}
+    .hdr h1{font-family:var(--heading);font-size:1.3rem;letter-spacing:.04em;font-weight:400}
+    .hdr-sub{font-size:.8rem;color:var(--accent);margin-top:2px}
+    .hdr-actions{display:flex;gap:8px;align-items:center}
 
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--ink);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+    .ctr{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
 
-    /* Header */
-    .header {
-      background: var(--ink);
-      color: #fff;
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header h1 {
-      font-family: var(--font-heading);
-      font-size: 1.4rem;
-      letter-spacing: 0.04em;
-      font-weight: 400;
-    }
-    .header-sub {
-      font-size: 0.82rem;
-      color: var(--accent);
-      margin-top: 2px;
-    }
-
-    /* Container */
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 24px 16px 60px;
-    }
-
-    /* Toolbar */
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    /* Card */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      margin-bottom: 16px;
-    }
-
-    /* Section title */
-    .section-title {
-      font-family: var(--font-heading);
-      font-size: 1.25rem;
-      margin-bottom: 16px;
-      color: var(--ink);
-      font-weight: 400;
-    }
-    .section-title .count {
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      font-weight: 400;
-      color: var(--muted);
-    }
-
-    /* Select */
-    select {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-family: var(--font-body);
-      background: var(--card);
-      cursor: pointer;
-      width: 100%;
-      max-width: 320px;
-      color: var(--ink);
-    }
+    /* Setup screen */
+    .setup{max-width:480px;margin:60px auto;text-align:center}
+    .setup h2{font-family:var(--heading);font-size:1.6rem;margin-bottom:8px;font-weight:400}
+    .setup p{color:var(--muted);font-size:.9rem;margin-bottom:24px;line-height:1.5}
+    .setup input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--rs);font-size:.95rem;font-family:var(--font);margin-bottom:12px}
+    .setup input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(216,167,177,.15)}
 
     /* Buttons */
-    .btn-primary {
-      width: 100%;
-      padding: 14px 0;
-      background: var(--ink);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      font-family: var(--font-body);
-      cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.2s;
-    }
-    .btn-primary:hover { background: var(--accent); }
-    .btn-primary.saved { background: var(--green); }
+    .btn{padding:10px 20px;border:none;border-radius:var(--rs);font-size:.9rem;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s}
+    .btn-primary{background:var(--ink);color:#fff;width:100%}
+    .btn-primary:hover{background:var(--accent)}
+    .btn-sm{padding:8px 14px;font-size:.82rem;background:transparent;color:var(--muted);border:1px solid var(--border)}
+    .btn-sm:hover{border-color:var(--accent);color:var(--ink)}
+    .btn-run{background:var(--accent);color:#fff;padding:10px 24px;font-size:.9rem}
+    .btn-run:hover{background:#c4909a}
+    .btn-run:disabled{opacity:.5;cursor:not-allowed}
 
-    .btn-secondary {
-      padding: 8px 16px;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.82rem;
-      font-weight: 500;
-      font-family: var(--font-body);
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--ink); }
+    /* Cards */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
 
-    .btn-delete {
-      background: none;
-      border: none;
-      color: var(--red);
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .btn-delete:hover { background: var(--red-bg); }
+    /* Summary cards */
+    .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;text-align:center}
+    .stat-val{font-family:var(--heading);font-size:2rem;font-weight:400}
+    .stat-label{font-size:.78rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.03em}
 
-    /* Grid */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    /* Progress */
+    .progress-wrap{margin-bottom:20px}
+    .progress-bar{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--accent);transition:width .3s;border-radius:4px}
+    .progress-text{font-size:.82rem;color:var(--muted);margin-top:6px;text-align:center}
 
-    /* Card label */
-    .card-label {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* External link */
-    .ext-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .ext-link:hover { color: var(--ink); }
-
-    /* Instructions */
-    .instruction {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 6px;
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .step-num {
-      background: var(--accent-bg);
-      color: var(--accent);
-      font-weight: 700;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    /* Form elements */
-    .input-label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-top: 14px;
-      display: block;
-    }
-    input[type="date"] {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-family: var(--font-body);
-      margin-top: 6px;
-      color: var(--ink);
-    }
-    input[type="date"]:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(216, 167, 177, 0.15);
-    }
-    textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-family: var(--font-body);
-      margin-top: 6px;
-      resize: vertical;
-      color: var(--ink);
-    }
-
-    /* Lag display */
-    .lag-display {
-      text-align: center;
-      padding: 28px 20px;
-      border-radius: var(--radius);
-      margin-bottom: 24px;
-      border-width: 2px;
-      border-style: solid;
-    }
-    .lag-num {
-      font-family: var(--font-heading);
-      font-size: 3.5rem;
-      font-weight: 400;
-      line-height: 1;
-    }
-    .lag-label {
-      font-size: 0.9rem;
-      margin-top: 6px;
-      font-weight: 500;
-    }
-    .lag-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* Preview */
-    .lag-preview {
-      text-align: center;
-      padding: 12px 0;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
+    /* Filters */
+    .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+    .filters select,.filters input{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:.88rem;font-family:var(--font);background:var(--card)}
+    .filters select:focus,.filters input:focus{outline:none;border-color:var(--accent)}
+    .filters input[type=search]{min-width:200px}
 
     /* Table */
-    .table-wrap { overflow: hidden; padding: 0; }
-    .table-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 70px 50px;
-      gap: 8px;
-      padding: 12px 16px;
-      align-items: center;
-      font-size: 0.88rem;
-      border-bottom: 1px solid #F0EDE8;
-    }
-    .table-header {
-      font-weight: 600;
-      color: var(--muted);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      background: var(--bg);
-      border-bottom: 2px solid var(--border);
-    }
-    .table-row:last-child { border-bottom: none; }
-    .row-notes {
-      padding: 4px 16px 10px;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-style: italic;
-    }
+    .tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+    .tbl th{text-align:left;padding:10px 12px;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;background:var(--card);z-index:1}
+    .tbl th:hover{color:var(--ink)}
+    .tbl th .sort-arrow{margin-left:4px;opacity:.4}
+    .tbl th.active .sort-arrow{opacity:1;color:var(--accent)}
+    .tbl td{padding:10px 12px;border-bottom:1px solid #F0EDE8;vertical-align:middle}
+    .tbl tr:hover td{background:#FDFCFB}
+    .tbl .lag-cell{font-weight:700;border-radius:6px;padding:4px 10px;display:inline-block;min-width:42px;text-align:center}
+    .lag-g{color:var(--green);background:var(--green-bg)}
+    .lag-a{color:#E65100;background:var(--amber-bg)}
+    .lag-r{color:var(--red);background:var(--red-bg)}
+    .lag-na{color:var(--muted);background:#f5f5f5}
 
-    @media (max-width: 640px) {
-      .table-row { grid-template-columns: 1fr 1fr 1fr 60px 40px; font-size: 0.8rem; padding: 10px 12px; }
-    }
+    /* Section titles */
+    .sec-title{font-family:var(--heading);font-size:1.15rem;margin-bottom:14px;font-weight:400;display:flex;align-items:center;gap:8px}
+    .sec-title .ct{font-family:var(--font);font-size:.82rem;color:var(--muted);font-weight:400}
 
-    /* Empty state */
-    .empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    /* Methodology */
-    .methodology p {
-      margin: 0 0 8px;
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .methodology p:last-child { margin-bottom: 0; }
-    .methodology strong { color: var(--ink); }
+    /* Run history */
+    .run-list{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .run-chip{padding:6px 12px;border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;background:var(--card);transition:all .2s}
+    .run-chip:hover{border-color:var(--accent)}
+    .run-chip.active{background:var(--accent-bg);border-color:var(--accent);color:var(--ink)}
 
     /* Error */
-    .error-msg {
-      color: var(--red);
-      font-size: 0.88rem;
-      padding: 8px 0;
-      font-weight: 500;
-    }
+    .error{color:var(--red);font-size:.88rem;padding:12px 0}
 
-    /* SVG chart */
-    .chart-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-    .chart-wrap svg {
-      width: 100%;
-      max-width: 700px;
-      display: block;
-      margin: 0 auto;
-    }
+    /* Toast */
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:var(--rs);font-size:.88rem;z-index:200;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
 
-    /* Fade in animation */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Empty */
+    .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+
+    /* Modal overlay */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal{background:var(--card);border-radius:var(--r);padding:24px;max-width:420px;width:100%}
+    .modal h3{font-family:var(--heading);font-size:1.2rem;margin-bottom:12px;font-weight:400}
+    .modal input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:.9rem;font-family:var(--font);margin-bottom:12px}
+    .modal input:focus{outline:none;border-color:var(--accent)}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+    @media(max-width:640px){
+      .summary{grid-template-columns:1fr 1fr}
+      .tbl{font-size:.8rem}
+      .tbl th,.tbl td{padding:8px 6px}
+      .hdr{padding:12px 16px}
     }
-    .fade-in { animation: fadeIn 0.3s ease-out; }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div class="header">
-    <div>
-      <h1>Foreclosure Lag Tracker</h1>
-      <div class="header-sub">County vs. PropertyRadar Data Freshness</div>
-    </div>
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Header -->
+<div class="hdr">
+  <div>
+    <h1>Foreclosure Lag Tracker</h1>
+    <div class="hdr-sub">PropertyRadar Data Freshness by County</div>
+  </div>
+  <div class="hdr-actions" id="headerActions" style="display:none">
+    <button class="btn btn-run" id="runBtn" onclick="startRun()">▶ Run Check</button>
+    <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
+    <button class="btn btn-sm" onclick="showSettings()">⚙ Settings</button>
+  </div>
+</div>
+
+<div class="ctr">
+  <!-- Setup Screen (shown when no API token) -->
+  <div class="setup" id="setupScreen">
+    <h2>Connect PropertyRadar</h2>
+    <p>
+      Enter your PropertyRadar API token to get started. The tool will automatically check data freshness across 600+ US counties.
+    </p>
+    <input type="password" id="setupToken" placeholder="Paste your PropertyRadar API token" />
+    <button class="btn btn-primary" onclick="saveToken()">Connect &amp; Start</button>
+    <p style="margin-top:16px;font-size:.78rem;color:var(--muted)">
+      Find your API token in PropertyRadar → Account Settings → API section.<br>
+      Your token is stored locally in your browser and only sent to PropertyRadar's API.
+    </p>
   </div>
 
-  <div class="container" id="app">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <select id="countySelect"></select>
-      <div style="flex:1"></div>
-      <button class="btn-secondary" onclick="exportData()">Export</button>
-      <button class="btn-secondary" onclick="document.getElementById('importFile').click()">Import</button>
-      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+  <!-- Main Dashboard (hidden until token saved) -->
+  <div id="dashboard" style="display:none">
+
+    <!-- Progress bar (shown during run) -->
+    <div class="progress-wrap" id="progressWrap" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Starting...</div>
     </div>
 
-    <!-- Lag Display (latest) -->
-    <div id="lagDisplay" style="display:none"></div>
-
-    <!-- New Check Form -->
-    <h2 class="section-title">New Check</h2>
-    <div class="grid-2" id="formCards"></div>
-
-    <!-- Notes -->
-    <div class="card">
-      <label class="input-label">Notes (optional)</label>
-      <textarea id="notesInput" rows="2" placeholder="Any observations about this check..."></textarea>
+    <!-- Summary Stats -->
+    <div class="summary" id="summaryCards">
+      <div class="stat"><div class="stat-val" id="statAvg">—</div><div class="stat-label">Avg Lag (days)</div></div>
+      <div class="stat"><div class="stat-val" id="statMedian">—</div><div class="stat-label">Median Lag</div></div>
+      <div class="stat"><div class="stat-val" id="statBest">—</div><div class="stat-label">Best County</div></div>
+      <div class="stat"><div class="stat-val" id="statWorst">—</div><div class="stat-label">Worst County</div></div>
+      <div class="stat"><div class="stat-val" id="statChecked">—</div><div class="stat-label">Counties Checked</div></div>
     </div>
 
-    <!-- Error -->
-    <div id="errorMsg" class="error-msg" style="display:none"></div>
-
-    <!-- Submit -->
-    <button class="btn-primary" id="submitBtn" onclick="handleSubmit()">Calculate &amp; Save</button>
-
-    <!-- Preview -->
-    <div id="lagPreview" class="lag-preview" style="display:none"></div>
-
-    <!-- Trend Chart -->
-    <div id="chartSection" style="display:none; margin-top:36px">
-      <h2 class="section-title" id="chartTitle">Lag Trend</h2>
-      <div class="card">
-        <div class="chart-wrap" id="chartWrap"></div>
-      </div>
+    <!-- Run History chips -->
+    <div id="runHistorySection" style="display:none">
+      <div class="sec-title">Run History</div>
+      <div class="run-list" id="runList"></div>
     </div>
 
-    <!-- History -->
-    <div style="margin-top:36px">
-      <h2 class="section-title" id="historyTitle">Check History <span class="count">(0 records)</span></h2>
-      <div id="historyContent"></div>
+    <!-- Filters -->
+    <div class="filters">
+      <select id="filterState" onchange="renderTable()">
+        <option value="">All States</option>
+      </select>
+      <input type="search" id="filterSearch" placeholder="Search county..." oninput="renderTable()" />
+      <select id="filterLag" onchange="renderTable()">
+        <option value="">All Lag Times</option>
+        <option value="good">≤ 3 days (Good)</option>
+        <option value="ok">4-7 days (Moderate)</option>
+        <option value="bad">8+ days (Slow)</option>
+        <option value="na">No Data</option>
+      </select>
+    </div>
+
+    <!-- County Table -->
+    <div class="card" style="padding:0;overflow:auto;max-height:70vh">
+      <table class="tbl" id="countyTable">
+        <thead>
+          <tr>
+            <th data-sort="county" onclick="setSort('county')">County <span class="sort-arrow">↕</span></th>
+            <th data-sort="state" onclick="setSort('state')">State <span class="sort-arrow">↕</span></th>
+            <th data-sort="pop" onclick="setSort('pop')">Population <span class="sort-arrow">↕</span></th>
+            <th data-sort="lag" onclick="setSort('lag')" class="active">Lag (Days) <span class="sort-arrow">↓</span></th>
+            <th data-sort="recDate" onclick="setSort('recDate')">Notice Rec. Date <span class="sort-arrow">↕</span></th>
+            <th data-sort="pubDate" onclick="setSort('pubDate')">PR Published <span class="sort-arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
     </div>
 
     <!-- Methodology -->
-    <div style="margin-top:36px">
-      <h2 class="section-title">Methodology</h2>
-      <div class="card methodology">
-        <p><strong>1.</strong> Get the latest entry from the county recorder source and note the <strong>Notice Recording Date</strong>.</p>
-        <p><strong>2.</strong> Go to PropertyRadar and filter by <strong>FCL Recording Date (descending)</strong>. Note the latest entry.</p>
-        <p><strong>3.</strong> Lag Time = County Notice Recording Date &minus; PR FCL Recording Date (in days). A positive value means PropertyRadar is behind the county source.</p>
+    <div style="margin-top:28px">
+      <div class="sec-title">Methodology</div>
+      <div class="card" style="font-size:.88rem;color:var(--muted);line-height:1.7">
+        <p style="margin:0 0 6px"><strong>1.</strong> For each county, the tool pulls the most recent pre-foreclosure filing from PropertyRadar via API.</p>
+        <p style="margin:0 0 6px"><strong>2.</strong> It compares the <strong>Notice Recording Date</strong> (when the county recorded it) vs. the <strong>Published Date</strong> (when PropertyRadar made it available).</p>
+        <p style="margin:0"><strong>3.</strong> Lag = Published Date − Notice Recording Date. A positive value means PropertyRadar took that many days to surface the data after the county recorded it.</p>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-bg" id="settingsModal" style="display:none" onclick="if(event.target===this)hideSettings()">
+  <div class="modal">
+    <h3>Settings</h3>
+    <label style="font-size:.82rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">API Token</label>
+    <input type="password" id="settingsToken" placeholder="PropertyRadar API token" />
+    <div class="modal-actions">
+      <button class="btn btn-sm" onclick="hideSettings()">Cancel</button>
+      <button class="btn btn-run" onclick="updateToken()">Save</button>
+    </div>
+    <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
+    <button class="btn btn-sm" style="color:var(--red);border-color:var(--red);width:100%" onclick="clearAllData()">Clear All Data</button>
+  </div>
+</div>
 
 <script>
-// ─── County Config ────────────────────────────────────────
-const COUNTIES = [
-  {
-    id: "maricopa-az",
-    name: "Maricopa County",
-    state: "AZ",
-    countySource: {
-      label: "Maricopa County Recorder (Legacy Site)",
-      url: "https://legacy.recorder.maricopa.gov/recdocdata/",
-      instructions: [
-        'Open the legacy recorder search page (link above)',
-        'Select Document Code: "NOTICE OF TRUSTEES SALE"',
-        'Set Begin Date to ~30 days ago and End Date to today',
-        'Click Search — results appear sorted by recording date',
-        'Find the most recent Notice Recording Date and enter it below',
-      ],
-      dateFieldLabel: "Latest Notice Recording Date (County)",
-    },
-    prSource: {
-      label: "PropertyRadar",
-      url: "https://app.propertyradar.com",
-      instructions: [
-        'Open PropertyRadar (link above) and go to Discover',
-        'Set location to Maricopa County, AZ',
-        'Add criteria: Foreclosure → In Foreclosure = Yes',
-        'Switch to Grid view and add "Notice Recording Date" column',
-        'Sort by Notice Recording Date descending (newest first)',
-        'Enter the latest FCL Recording Date below',
-      ],
-      dateFieldLabel: "Latest FCL Recording Date (PropertyRadar)",
-    },
-  },
+// ─── County Data (621 US counties with 100K+ population, 2024 Census) ─────
+const C=[
+{f:"06037",n:"Los Angeles",s:"CA",p:9757179},{f:"17031",n:"Cook",s:"IL",p:5182617},{f:"48201",n:"Harris",s:"TX",p:5009302},{f:"04013",n:"Maricopa",s:"AZ",p:4673096},{f:"06073",n:"San Diego",s:"CA",p:3298799},{f:"06059",n:"Orange",s:"CA",p:3170435},{f:"12086",n:"Miami-Dade",s:"FL",p:2838461},{f:"48113",n:"Dallas",s:"TX",p:2656028},{f:"36047",n:"Kings",s:"NY",p:2617631},{f:"06065",n:"Riverside",s:"CA",p:2529933},
+{f:"32003",n:"Clark",s:"NV",p:2398871},{f:"53033",n:"King",s:"WA",p:2340211},{f:"36081",n:"Queens",s:"NY",p:2316841},{f:"48439",n:"Tarrant",s:"TX",p:2230708},{f:"06071",n:"San Bernardino",s:"CA",p:2214281},{f:"48029",n:"Bexar",s:"TX",p:2127737},{f:"12011",n:"Broward",s:"FL",p:2037472},{f:"06085",n:"Santa Clara",s:"CA",p:1926325},{f:"26163",n:"Wayne",s:"MI",p:1771063},{f:"25017",n:"Middlesex",s:"MA",p:1668956},
+{f:"36061",n:"New York",s:"NY",p:1660664},{f:"06001",n:"Alameda",s:"CA",p:1649060},{f:"06067",n:"Sacramento",s:"CA",p:1611231},{f:"12099",n:"Palm Beach",s:"FL",p:1582055},{f:"12057",n:"Hillsborough",s:"FL",p:1581426},{f:"42101",n:"Philadelphia",s:"PA",p:1573916},{f:"36103",n:"Suffolk",s:"NY",p:1535909},{f:"12095",n:"Orange",s:"FL",p:1533646},{f:"36059",n:"Nassau",s:"NY",p:1392438},{f:"36005",n:"Bronx",s:"NY",p:1384724},
+{f:"48453",n:"Travis",s:"TX",p:1363767},{f:"39049",n:"Franklin",s:"OH",p:1356303},{f:"26125",n:"Oakland",s:"MI",p:1296888},{f:"27053",n:"Hennepin",s:"MN",p:1273334},{f:"48085",n:"Collin",s:"TX",p:1254658},{f:"39035",n:"Cuyahoga",s:"OH",p:1240594},{f:"37183",n:"Wake",s:"NC",p:1232444},{f:"42003",n:"Allegheny",s:"PA",p:1231814},{f:"49035",n:"Salt Lake",s:"UT",p:1216274},{f:"37119",n:"Mecklenburg",s:"NC",p:1206285},
+{f:"06013",n:"Contra Costa",s:"CA",p:1172607},{f:"51059",n:"Fairfax",s:"VA",p:1160925},{f:"13121",n:"Fulton",s:"GA",p:1090354},{f:"24031",n:"Montgomery",s:"MD",p:1082273},{f:"04019",n:"Pima",s:"AZ",p:1080149},{f:"12031",n:"Duval",s:"FL",p:1055159},{f:"48121",n:"Denton",s:"TX",p:1045120},{f:"06019",n:"Fresno",s:"CA",p:1024125},{f:"36119",n:"Westchester",s:"NY",p:1006447},{f:"13135",n:"Gwinnett",s:"GA",p:1003869},
+{f:"15003",n:"Honolulu",s:"HI",p:998747},{f:"29189",n:"St. Louis",s:"MO",p:992929},{f:"09110",n:"Capitol Planning Region",s:"CT",p:991508},{f:"18097",n:"Marion",s:"IN",p:981628},{f:"34003",n:"Bergen",s:"NJ",p:978641},{f:"24033",n:"Prince George's",s:"MD",p:966629},{f:"12103",n:"Pinellas",s:"FL",p:965870},{f:"48157",n:"Fort Bend",s:"TX",p:958434},{f:"36029",n:"Erie",s:"NY",p:950602},{f:"53053",n:"Pierce",s:"WA",p:941170},
+{f:"17043",n:"DuPage",s:"IL",p:937142},{f:"55079",n:"Milwaukee",s:"WI",p:924740},{f:"06029",n:"Kern",s:"CA",p:922529},{f:"48215",n:"Hidalgo",s:"TX",p:914820},{f:"47157",n:"Shelby",s:"TN",p:910530},{f:"34023",n:"Middlesex",s:"NJ",p:890119},{f:"26099",n:"Macomb",s:"MI",p:886175},{f:"34013",n:"Essex",s:"NJ",p:881527},{f:"25027",n:"Worcester",s:"MA",p:881248},{f:"42091",n:"Montgomery",s:"PA",p:879190},
+{f:"48141",n:"El Paso",s:"TX",p:875784},{f:"53061",n:"Snohomish",s:"WA",p:864113},{f:"12071",n:"Lee",s:"FL",p:860959},{f:"12105",n:"Polk",s:"FL",p:852878},{f:"24005",n:"Baltimore",s:"MD",p:852425},{f:"39061",n:"Hamilton",s:"OH",p:837359},{f:"06111",n:"Ventura",s:"CA",p:835427},{f:"06075",n:"San Francisco",s:"CA",p:827526},{f:"25009",n:"Essex",s:"MA",p:823938},{f:"40109",n:"Oklahoma",s:"OK",p:816490},
+{f:"06077",n:"San Joaquin",s:"CA",p:816108},{f:"41051",n:"Multnomah",s:"OR",p:795897},{f:"21111",n:"Jefferson",s:"KY",p:793881},{f:"25025",n:"Suffolk",s:"MA",p:793144},{f:"13067",n:"Cobb",s:"GA",p:787538},{f:"13089",n:"DeKalb",s:"GA",p:770307},{f:"08041",n:"El Paso",s:"CO",p:752772},{f:"36055",n:"Monroe",s:"NY",p:752202},{f:"48339",n:"Montgomery",s:"TX",p:749613},{f:"49049",n:"Utah",s:"UT",p:747234},
+{f:"06081",n:"San Mateo",s:"CA",p:742893},{f:"25021",n:"Norfolk",s:"MA",p:740754},{f:"34017",n:"Hudson",s:"NJ",p:736185},{f:"47037",n:"Davidson",s:"TN",p:729505},{f:"08031",n:"Denver",s:"CO",p:729019},{f:"48491",n:"Williamson",s:"TX",p:727480},{f:"29095",n:"Jackson",s:"MO",p:727362},{f:"17097",n:"Lake",s:"IL",p:718604},{f:"17197",n:"Will",s:"IL",p:708583},{f:"11001",n:"District of Columbia",s:"DC",p:702250},
+{f:"40143",n:"Tulsa",s:"OK",p:693514},{f:"44007",n:"Providence",s:"RI",p:675912},{f:"26081",n:"Kent",s:"MI",p:673002},{f:"35001",n:"Bernalillo",s:"NM",p:671747},{f:"08005",n:"Arapahoe",s:"CO",p:666918},{f:"34029",n:"Ocean",s:"NJ",p:666434},{f:"01073",n:"Jefferson",s:"AL",p:664744},{f:"12101",n:"Pasco",s:"FL",p:659114},{f:"12009",n:"Brevard",s:"FL",p:658447},{f:"42017",n:"Bucks",s:"PA",p:650131},
+{f:"34025",n:"Monmouth",s:"NJ",p:647520},{f:"09190",n:"Western Connecticut Planning Region",s:"CT",p:637013},{f:"20091",n:"Johnson",s:"KS",p:632276},{f:"41067",n:"Washington",s:"OR",p:611272},{f:"12127",n:"Volusia",s:"FL",p:602772},{f:"24003",n:"Anne Arundel",s:"MD",p:602350},{f:"31055",n:"Douglas",s:"NE",p:601158},{f:"34039",n:"Union",s:"NJ",p:594160},{f:"25005",n:"Bristol",s:"MA",p:588593},{f:"55025",n:"Dane",s:"WI",p:588347},
+{f:"10003",n:"New Castle",s:"DE",p:588093},{f:"42045",n:"Delaware",s:"PA",p:584882},{f:"08059",n:"Jefferson",s:"CO",p:578533},{f:"09170",n:"South Central Connecticut Planning Region",s:"CT",p:576718},{f:"45045",n:"Greenville",s:"SC",p:570745},{f:"24510",n:"Baltimore",s:"MD",p:568271},{f:"42071",n:"Lancaster",s:"PA",p:563293},{f:"42029",n:"Chester",s:"PA",p:560745},{f:"37081",n:"Guilford",s:"NC",p:558816},{f:"06099",n:"Stanislaus",s:"CA",p:556972},
+{f:"53063",n:"Spokane",s:"WA",p:555947},{f:"08001",n:"Adams",s:"CO",p:542973},{f:"25023",n:"Plymouth",s:"MA",p:542090},{f:"27123",n:"Ramsey",s:"MN",p:542015},{f:"39153",n:"Summit",s:"OH",p:538370},{f:"39113",n:"Montgomery",s:"OH",p:537443},{f:"20173",n:"Sedgwick",s:"KS",p:536081},{f:"16001",n:"Ada",s:"ID",p:535799},{f:"34007",n:"Camden",s:"NJ",p:533988},{f:"53011",n:"Clark",s:"WA",p:527269},
+{f:"34031",n:"Passaic",s:"NJ",p:526597},{f:"34027",n:"Morris",s:"NJ",p:523053},{f:"17089",n:"Kane",s:"IL",p:520997},{f:"19153",n:"Polk",s:"IA",p:516185},{f:"04021",n:"Pinal",s:"AZ",p:513862},{f:"32031",n:"Washoe",s:"NV",p:507280},{f:"47093",n:"Knox",s:"TN",p:506748},{f:"18089",n:"Lake",s:"IN",p:502955},{f:"36085",n:"Richmond",s:"NY",p:498212},{f:"51153",n:"Prince William",s:"VA",p:497003},
+{f:"12117",n:"Seminole",s:"FL",p:494605},{f:"06097",n:"Sonoma",s:"CA",p:485375},{f:"06107",n:"Tulare",s:"CA",p:483546},{f:"12115",n:"Sarasota",s:"FL",p:476604},{f:"34005",n:"Burlington",s:"NJ",p:475515},{f:"42133",n:"York",s:"PA",p:471240},{f:"36067",n:"Onondaga",s:"NY",p:469812},{f:"12097",n:"Osceola",s:"FL",p:468058},{f:"25013",n:"Hampden",s:"MA",p:464151},{f:"09140",n:"Naugatuck Valley Planning Region",s:"CT",p:462220},
+{f:"12081",n:"Manatee",s:"FL",p:458352},{f:"06095",n:"Solano",s:"CA",p:455101},{f:"51810",n:"Virginia Beach",s:"VA",p:454808},{f:"27037",n:"Dakota",s:"MN",p:453156},{f:"22033",n:"East Baton Rouge",s:"LA",p:453022},{f:"06083",n:"Santa Barbara",s:"CA",p:444500},{f:"12069",n:"Lake",s:"FL",p:444204},{f:"51107",n:"Loudoun",s:"VA",p:443380},{f:"42011",n:"Berks",s:"PA",p:439117},{f:"06053",n:"Monterey",s:"CA",p:436251},
+{f:"06061",n:"Placer",s:"CA",p:433822},{f:"48061",n:"Cameron",s:"TX",p:431874},{f:"45019",n:"Charleston",s:"SC",p:431001},{f:"45079",n:"Richland",s:"SC",p:430651},{f:"33011",n:"Hillsborough",s:"NH",p:430462},{f:"12083",n:"Marion",s:"FL",p:428905},{f:"22051",n:"Jefferson",s:"LA",p:427253},{f:"39095",n:"Lucas",s:"OH",p:426291},{f:"41005",n:"Clackamas",s:"OR",p:425857},{f:"29183",n:"St. Charles",s:"MO",p:423726},
+{f:"01089",n:"Madison",s:"AL",p:423355},{f:"55133",n:"Waukesha",s:"WI",p:417029},{f:"12021",n:"Collier",s:"FL",p:416233},{f:"45051",n:"Horry",s:"SC",p:413391},{f:"48039",n:"Brazoria",s:"TX",p:413224},{f:"01097",n:"Mobile",s:"AL",p:412339},{f:"36071",n:"Orange",s:"NY",p:411767},{f:"26049",n:"Genesee",s:"MI",p:402279},{f:"05119",n:"Pulaski",s:"AR",p:401209},{f:"48027",n:"Bell",s:"TX",p:399578},
+{f:"39017",n:"Butler",s:"OH",p:399542},{f:"18003",n:"Allen",s:"IN",p:399295},{f:"37067",n:"Forsyth",s:"NC",p:398143},{f:"08035",n:"Douglas",s:"CO",p:393995},{f:"34021",n:"Mercer",s:"NJ",p:392138},{f:"12111",n:"St. Lucie",s:"FL",p:390670},{f:"51041",n:"Chesterfield",s:"VA",p:389793},{f:"47065",n:"Hamilton",s:"TN",p:386256},{f:"42077",n:"Lehigh",s:"PA",p:385655},{f:"41039",n:"Lane",s:"OR",p:382396},
+{f:"18057",n:"Hamilton",s:"IN",p:379704},{f:"49011",n:"Davis",s:"UT",p:378470},{f:"47149",n:"Rutherford",s:"TN",p:376996},{f:"27003",n:"Anoka",s:"MN",p:376840},{f:"08069",n:"Larimer",s:"CO",p:374574},{f:"39151",n:"Stark",s:"OH",p:374091},{f:"26161",n:"Washtenaw",s:"MI",p:373875},{f:"08123",n:"Weld",s:"CO",p:369745},{f:"45083",n:"Spartanburg",s:"SC",p:369256},{f:"48167",n:"Galveston",s:"TX",p:367407},
+{f:"22071",n:"Orleans",s:"LA",p:362701},{f:"34035",n:"Somerset",s:"NJ",p:357467},{f:"48355",n:"Nueces",s:"TX",p:353125},{f:"41047",n:"Marion",s:"OR",p:352867},{f:"42129",n:"Westmoreland",s:"PA",p:350935},{f:"36087",n:"Rockland",s:"NY",p:348144},{f:"37063",n:"Durham",s:"NC",p:343628},{f:"24027",n:"Howard",s:"MD",p:339668},{f:"51087",n:"Henrico",s:"VA",p:338696},{f:"37051",n:"Cumberland",s:"NC",p:338430},
+{f:"09120",n:"Greater Bridgeport Planning Region",s:"CT",p:335666},{f:"12109",n:"St. Johns",s:"FL",p:334928},{f:"31109",n:"Lancaster",s:"NE",p:332857},{f:"42079",n:"Luzerne",s:"PA",p:331379},{f:"12033",n:"Escambia",s:"FL",p:331275},{f:"08013",n:"Boulder",s:"CO",p:330262},{f:"21067",n:"Fayette",s:"KY",p:329437},{f:"48303",n:"Lubbock",s:"TX",p:327394},{f:"42095",n:"Northampton",s:"PA",p:322989},{f:"33015",n:"Rockingham",s:"NH",p:322433},
+{f:"39093",n:"Lorain",s:"OH",p:322030},{f:"05007",n:"Benton",s:"AR",p:321566},{f:"36001",n:"Albany",s:"NY",p:319964},{f:"17111",n:"McHenry",s:"IL",p:315959},{f:"23005",n:"Cumberland",s:"ME",p:313809},{f:"45063",n:"Lexington",s:"SC",p:313774},{f:"34015",n:"Gloucester",s:"NJ",p:311783},{f:"29077",n:"Greene",s:"MO",p:307942},{f:"13051",n:"Chatham",s:"GA",p:307336},{f:"26139",n:"Ottawa",s:"MI",p:306235},
+{f:"40027",n:"Cleveland",s:"OK",p:303952},{f:"45091",n:"York",s:"SC",p:303001},{f:"53067",n:"Thurston",s:"WA",p:302912},{f:"12073",n:"Leon",s:"FL",p:300488},{f:"36027",n:"Dutchess",s:"NY",p:299963},{f:"24021",n:"Frederick",s:"MD",p:299317},{f:"13063",n:"Clayton",s:"GA",p:297703},{f:"06047",n:"Merced",s:"CA",p:296774},{f:"13057",n:"Cherokee",s:"GA",p:293513},{f:"42043",n:"Dauphin",s:"PA",p:293029},
+{f:"48209",n:"Hays",s:"TX",p:292029},{f:"12001",n:"Alachua",s:"FL",p:291782},{f:"26065",n:"Ingham",s:"MI",p:290427},{f:"02020",n:"Anchorage",s:"AK",p:289600},{f:"27163",n:"Washington",s:"MN",p:283960},{f:"17201",n:"Winnebago",s:"IL",p:283790},{f:"09180",n:"Southeastern Connecticut Planning Region",s:"CT",p:282602},{f:"06079",n:"San Luis Obispo",s:"CA",p:281843},{f:"53035",n:"Kitsap",s:"WA",p:281420},{f:"13117",n:"Forsyth",s:"GA",p:280096},
+{f:"29510",n:"St. Louis",s:"MO",p:279695},{f:"37021",n:"Buncombe",s:"NC",p:279210},{f:"34001",n:"Atlantic",s:"NJ",p:279114},{f:"22103",n:"St. Tammany",s:"LA",p:277615},{f:"49057",n:"Weber",s:"UT",p:276118},{f:"42041",n:"Cumberland",s:"PA",p:275516},{f:"55009",n:"Brown",s:"WI",p:273909},{f:"18141",n:"St. Joseph",s:"IN",p:273744},{f:"48479",n:"Webb",s:"TX",p:272823},{f:"10005",n:"Sussex",s:"DE",p:271134},
+{f:"48309",n:"McLennan",s:"TX",p:270358},{f:"47187",n:"Williamson",s:"TN",p:269136},{f:"42049",n:"Erie",s:"PA",p:267750},{f:"16027",n:"Canyon",s:"ID",p:266892},{f:"05143",n:"Washington",s:"AR",p:266184},{f:"24025",n:"Harford",s:"MD",p:265514},{f:"26077",n:"Kalamazoo",s:"MI",p:264780},{f:"45015",n:"Berkeley",s:"SC",p:264276},{f:"37179",n:"Union",s:"NC",p:263386},{f:"29047",n:"Clay",s:"MO",p:263370},
+{f:"17119",n:"Madison",s:"IL",p:263017},{f:"06087",n:"Santa Cruz",s:"CA",p:262406},{f:"01003",n:"Baldwin",s:"AL",p:261608},{f:"13151",n:"Henry",s:"GA",p:259315},{f:"53077",n:"Yakima",s:"WA",p:258523},{f:"06041",n:"Marin",s:"CA",p:256400},{f:"39165",n:"Warren",s:"OH",p:256059},{f:"51550",n:"Chesapeake",s:"VA",p:254997},{f:"22055",n:"Lafayette",s:"LA",p:254241},{f:"48245",n:"Jefferson",s:"TX",p:253948},
+{f:"04025",n:"Yavapai",s:"AZ",p:252013},{f:"17163",n:"St. Clair",s:"IL",p:251149},{f:"37101",n:"Johnston",s:"NC",p:249794},{f:"48041",n:"Brazos",s:"TX",p:249624},{f:"48423",n:"Smith",s:"TX",p:249091},{f:"47125",n:"Montgomery",s:"TN",p:246025},{f:"37025",n:"Cabarrus",s:"NC",p:244925},{f:"37129",n:"New Hanover",s:"NC",p:243333},{f:"37071",n:"Gaston",s:"NC",p:242010},{f:"01125",n:"Tuscaloosa",s:"AL",p:241212},
+{f:"36091",n:"Saratoga",s:"NY",p:240360},{f:"51013",n:"Arlington",s:"VA",p:239807},{f:"39041",n:"Delaware",s:"OH",p:237966},{f:"12019",n:"Clay",s:"FL",p:236760},{f:"01117",n:"Shelby",s:"AL",p:235969},{f:"53073",n:"Whatcom",s:"WA",p:234954},{f:"51760",n:"Richmond",s:"VA",p:233655},{f:"25001",n:"Barnstable",s:"MA",p:232570},{f:"48139",n:"Ellis",s:"TX",p:232387},{f:"39085",n:"Lake",s:"OH",p:232360},
+{f:"29099",n:"Jefferson",s:"MO",p:231888},{f:"19113",n:"Linn",s:"IA",p:231762},{f:"51710",n:"Norfolk",s:"VA",p:231105},{f:"35013",n:"Doña Ana",s:"NM",p:229366},{f:"36065",n:"Oneida",s:"NY",p:228347},{f:"04015",n:"Mohave",s:"AZ",p:226479},{f:"01101",n:"Montgomery",s:"AL",p:225894},{f:"39099",n:"Mahoning",s:"OH",p:225786},{f:"06113",n:"Yolo",s:"CA",p:225251},{f:"22017",n:"Caddo",s:"LA",p:224893},
+{f:"13139",n:"Hall",s:"GA",p:221745},{f:"41029",n:"Jackson",s:"OR",p:221331},{f:"12091",n:"Okaloosa",s:"FL",p:220483},{f:"04027",n:"Yuma",s:"AZ",p:220310},{f:"23031",n:"York",s:"ME",p:220143},{f:"53005",n:"Benton",s:"WA",p:218190},{f:"12053",n:"Hernando",s:"FL",p:218150},{f:"45007",n:"Anderson",s:"SC",p:217183},{f:"42069",n:"Lackawanna",s:"PA",p:216859},{f:"39025",n:"Clermont",s:"OH",p:214123},
+{f:"28047",n:"Harrison",s:"MS",p:213730},{f:"37133",n:"Onslow",s:"NC",p:212954},{f:"17019",n:"Champaign",s:"IL",p:212374},{f:"12015",n:"Charlotte",s:"FL",p:212122},{f:"28049",n:"Hinds",s:"MS",p:211975},{f:"47165",n:"Sumner",s:"TN",p:211721},{f:"41017",n:"Deschutes",s:"OR",p:211535},{f:"48251",n:"Johnson",s:"TX",p:210547},{f:"42125",n:"Washington",s:"PA",p:210434},{f:"15001",n:"Hawaii",s:"HI",p:209790},
+{f:"36063",n:"Niagara",s:"NY",p:209570},{f:"46099",n:"Minnehaha",s:"SD",p:208639},{f:"06007",n:"Butte",s:"CA",p:208334},{f:"49053",n:"Washington",s:"UT",p:207943},{f:"12113",n:"Santa Rosa",s:"FL",p:207653},{f:"18039",n:"Elkhart",s:"IN",p:207436},{f:"22019",n:"Calcasieu",s:"LA",p:206861},{f:"37097",n:"Iredell",s:"NC",p:206361},{f:"13245",n:"Richmond",s:"GA",p:206303},{f:"31153",n:"Sarpy",s:"NE",p:204828},
+{f:"13215",n:"Muscogee",s:"GA",p:201830},{f:"45013",n:"Beaufort",s:"SC",p:201775},{f:"48091",n:"Comal",s:"TX",p:201628},{f:"38017",n:"Cass",s:"ND",p:200945},{f:"27137",n:"St. Louis",s:"MN",p:200794},{f:"39155",n:"Trumbull",s:"OH",p:200300},{f:"12005",n:"Bay",s:"FL",p:199718},{f:"42019",n:"Butler",s:"PA",p:199341},{f:"55101",n:"Racine",s:"WI",p:198651},{f:"48257",n:"Kaufman",s:"TX",p:197829},
+{f:"26093",n:"Livingston",s:"MI",p:196976},{f:"36007",n:"Broome",s:"NY",p:196397},{f:"28033",n:"DeSoto",s:"MS",p:195871},{f:"55087",n:"Outagamie",s:"WI",p:195390},{f:"48187",n:"Guadalupe",s:"TX",p:195166},{f:"17167",n:"Sangamon",s:"IL",p:194345},{f:"06017",n:"El Dorado",s:"CA",p:192823},{f:"10001",n:"Kent",s:"DE",p:192690},{f:"29019",n:"Boone",s:"MO",p:192154},{f:"18157",n:"Tippecanoe",s:"IN",p:191650},
+{f:"18063",n:"Hendricks",s:"IN",p:190629},{f:"13223",n:"Paulding",s:"GA",p:188549},{f:"16055",n:"Kootenai",s:"ID",p:188323},{f:"01081",n:"Lee",s:"AL",p:187847},{f:"26145",n:"Saginaw",s:"MI",p:187714},{f:"39089",n:"Licking",s:"OH",p:184898},{f:"39103",n:"Medina",s:"OH",p:184625},{f:"48329",n:"Midland",s:"TX",p:183587},{f:"51700",n:"Newport News",s:"VA",p:183056},{f:"37001",n:"Alamance",s:"NC",p:183040},
+{f:"36111",n:"Ulster",s:"NY",p:182977},{f:"40017",n:"Canadian",s:"OK",p:181760},{f:"06025",n:"Imperial",s:"CA",p:181724},{f:"06089",n:"Shasta",s:"CA",p:181121},{f:"37147",n:"Pitt",s:"NC",p:180783},{f:"18163",n:"Vanderburgh",s:"IN",p:180387},{f:"48367",n:"Parker",s:"TX",p:179707},{f:"17143",n:"Peoria",s:"IL",p:179630},{f:"45003",n:"Aiken",s:"SC",p:179245},{f:"20177",n:"Shawnee",s:"KS",p:177942},
+{f:"37057",n:"Davidson",s:"NC",p:177809},{f:"09130",n:"Lower Connecticut River Valley Planning Region",s:"CT",p:177540},{f:"26121",n:"Muskegon",s:"MI",p:177428},{f:"24013",n:"Carroll",s:"MD",p:177108},{f:"18127",n:"Porter",s:"IN",p:175860},{f:"19163",n:"Scott",s:"IA",p:175601},{f:"13153",n:"Houston",s:"GA",p:174897},{f:"21117",n:"Kenton",s:"KY",p:174862},{f:"45035",n:"Dorchester",s:"SC",p:174663},{f:"24017",n:"Charles",s:"MD",p:174478},
+{f:"54039",n:"Kanawha",s:"WV",p:173906},{f:"55139",n:"Winnebago",s:"WI",p:173307},{f:"44003",n:"Kent",s:"RI",p:172450},{f:"39057",n:"Greene",s:"OH",p:172347},{f:"12061",n:"Indian River",s:"FL",p:172139},{f:"17113",n:"McLean",s:"IL",p:172069},{f:"30111",n:"Yellowstone",s:"MT",p:171583},{f:"50007",n:"Chittenden",s:"VT",p:170851},{f:"18081",n:"Johnson",s:"IN",p:170614},{f:"12017",n:"Citrus",s:"FL",p:170174},
+{f:"48135",n:"Ector",s:"TX",p:170022},{f:"47189",n:"Wilson",s:"TN",p:169948},{f:"08101",n:"Pueblo",s:"CO",p:169866},{f:"20209",n:"Wyandotte",s:"KS",p:169418},{f:"51179",n:"Stafford",s:"VA",p:168919},{f:"55059",n:"Kenosha",s:"WI",p:168754},{f:"39045",n:"Fairfield",s:"OH",p:167762},{f:"13073",n:"Columbia",s:"GA",p:167472},{f:"37019",n:"Brunswick",s:"NC",p:167112},{f:"37035",n:"Catawba",s:"NC",p:167054},
+{f:"42089",n:"Monroe",s:"PA",p:166523},{f:"27109",n:"Olmsted",s:"MN",p:166424},{f:"12085",n:"Martin",s:"FL",p:165666},{f:"42007",n:"Beaver",s:"PA",p:165540},{f:"55105",n:"Rock",s:"WI",p:165461},{f:"06039",n:"Madera",s:"CA",p:165432},{f:"25015",n:"Hampshire",s:"MA",p:165399},{f:"27145",n:"Stearns",s:"MN",p:163997},{f:"39133",n:"Portage",s:"OH",p:163839},{f:"15009",n:"Maui",s:"HI",p:163688},
+{f:"47163",n:"Sullivan",s:"TN",p:162703},{f:"36093",n:"Schenectady",s:"NY",p:162261},{f:"08077",n:"Mesa",s:"CO",p:161260},{f:"36083",n:"Rensselaer",s:"NY",p:160749},{f:"28121",n:"Rankin",s:"MS",p:160573},{f:"26147",n:"St. Clair",s:"MI",p:160308},{f:"26075",n:"Jackson",s:"MI",p:160233},{f:"19103",n:"Johnson",s:"IA",p:160080},{f:"42027",n:"Centre",s:"PA",p:159805},{f:"42055",n:"Franklin",s:"PA",p:159285},
+{f:"51510",n:"Alexandria",s:"VA",p:159102},{f:"13077",n:"Coweta",s:"GA",p:158233},{f:"22073",n:"Ouachita",s:"LA",p:157874},{f:"33013",n:"Merrimack",s:"NH",p:157869},{f:"35049",n:"Santa Fe",s:"NM",p:157765},{f:"35043",n:"Sandoval",s:"NM",p:157757},{f:"24043",n:"Washington",s:"MD",p:157228},{f:"27139",n:"Scott",s:"MN",p:157206},{f:"13021",n:"Bibb",s:"GA",p:157056},{f:"23019",n:"Penobscot",s:"ME",p:156840},
+{f:"26115",n:"Monroe",s:"MI",p:156045},{f:"34011",n:"Cumberland",s:"NJ",p:155678},{f:"06031",n:"Kings",s:"CA",p:154913},{f:"12119",n:"Sumter",s:"FL",p:154693},{f:"27171",n:"Wright",s:"MN",p:154593},{f:"37159",n:"Rowan",s:"NC",p:153384},{f:"22063",n:"Livingston",s:"LA",p:152886},{f:"37135",n:"Orange",s:"NC",p:152877},{f:"26021",n:"Berrien",s:"MI",p:152703},{f:"51177",n:"Spotsylvania",s:"VA",p:152021},
+{f:"13097",n:"Douglas",s:"GA",p:151887},{f:"48381",n:"Randall",s:"TX",p:150547},{f:"48181",n:"Grayson",s:"TX",p:150532},{f:"48441",n:"Taylor",s:"TX",p:148813},{f:"37151",n:"Randolph",s:"NC",p:148389},{f:"21227",n:"Warren",s:"KY",p:147936},{f:"34037",n:"Sussex",s:"NJ",p:147444},{f:"28059",n:"Jackson",s:"MS",p:147002},{f:"37085",n:"Harnett",s:"NC",p:146096},{f:"49005",n:"Cache",s:"UT",p:145487},
+{f:"42075",n:"Lebanon",s:"PA",p:145319},{f:"04005",n:"Coconino",s:"AZ",p:145161},{f:"42107",n:"Schuylkill",s:"PA",p:144523},{f:"21015",n:"Boone",s:"KY",p:144135},{f:"17093",n:"Kendall",s:"IL",p:143171},{f:"17161",n:"Rock Island",s:"IL",p:142731},{f:"47009",n:"Blount",s:"TN",p:142211},{f:"18105",n:"Monroe",s:"IN",p:140702},{f:"22105",n:"Tangipahoa",s:"LA",p:139823},{f:"47179",n:"Washington",s:"TN",p:139642},
+{f:"55073",n:"Marathon",s:"WI",p:139091},{f:"55131",n:"Washington",s:"WI",p:138727},{f:"45077",n:"Pickens",s:"SC",p:138207},{f:"45041",n:"Florence",s:"SC",p:138049},{f:"51650",n:"Hampton",s:"VA",p:137596},{f:"48397",n:"Rockwall",s:"TX",p:137044},{f:"12035",n:"Flagler",s:"FL",p:136744},{f:"54003",n:"Berkeley",s:"WV",p:136287},{f:"39023",n:"Clark",s:"OH",p:134985},{f:"18095",n:"Madison",s:"IN",p:134222},
+{f:"33017",n:"Strafford",s:"NH",p:134202},{f:"26025",n:"Calhoun",s:"MI",p:133785},{f:"16019",n:"Bonneville",s:"ID",p:133644},{f:"22005",n:"Ascension",s:"LA",p:133534},{f:"39173",n:"Wood",s:"OH",p:133077},{f:"53057",n:"Skagit",s:"WA",p:132736},{f:"06055",n:"Napa",s:"CA",p:132727},{f:"41043",n:"Linn",s:"OR",p:132474},{f:"06023",n:"Humboldt",s:"CA",p:132380},{f:"19013",n:"Black Hawk",s:"IA",p:132348},
+{f:"34019",n:"Hunterdon",s:"NJ",p:131708},{f:"05045",n:"Faulkner",s:"AR",p:131611},{f:"05125",n:"Saline",s:"AR",p:131252},{f:"22015",n:"Bossier",s:"LA",p:131102},{f:"44009",n:"Washington",s:"RI",p:130333},{f:"42021",n:"Cambria",s:"PA",p:130108},{f:"05131",n:"Sebastian",s:"AR",p:130035},{f:"13059",n:"Clarke",s:"GA",p:129995},{f:"48485",n:"Wichita",s:"TX",p:129984},{f:"13045",n:"Carroll",s:"GA",p:129911},
+{f:"17179",n:"Tazewell",s:"IL",p:129821},{f:"25003",n:"Berkshire",s:"MA",p:128726},{f:"23011",n:"Kennebec",s:"ME",p:128461},{f:"18019",n:"Clark",s:"IN",p:127479},{f:"30031",n:"Gallatin",s:"MT",p:126984},{f:"48183",n:"Gregg",s:"TX",p:126679},{f:"29097",n:"Jasper",s:"MO",p:126479},{f:"01103",n:"Morgan",s:"AL",p:126084},{f:"22079",n:"Rapides",s:"LA",p:125899},{f:"04003",n:"Cochise",s:"AZ",p:125773},
+{f:"13113",n:"Fayette",s:"GA",p:125107},{f:"39139",n:"Richland",s:"OH",p:124853},{f:"36013",n:"Chautauqua",s:"NY",p:124105},{f:"13217",n:"Newton",s:"GA",p:124010},{f:"42051",n:"Fayette",s:"PA",p:123941},{f:"30063",n:"Missoula",s:"MT",p:122546},{f:"26005",n:"Allegan",s:"MI",p:122429},{f:"13185",n:"Lowndes",s:"GA",p:122082},{f:"20045",n:"Douglas",s:"KS",p:121989},{f:"40031",n:"Comanche",s:"OK",p:121396},
+{f:"55063",n:"La Crosse",s:"WI",p:121060},{f:"35045",n:"San Juan",s:"NM",p:120817},{f:"37089",n:"Henderson",s:"NC",p:120771},{f:"37191",n:"Wayne",s:"NC",p:120338},{f:"42013",n:"Blair",s:"PA",p:120269},{f:"48451",n:"Tom Green",s:"TX",p:120103},{f:"01083",n:"Limestone",s:"AL",p:118942},{f:"48231",n:"Hunt",s:"TX",p:118729},{f:"37155",n:"Robeson",s:"NC",p:118624},{f:"55117",n:"Sheboygan",s:"WI",p:118331},
+{f:"36075",n:"Oswego",s:"NY",p:118305},{f:"02170",n:"Matanuska-Susitna",s:"AK",p:117613},{f:"13015",n:"Bartow",s:"GA",p:117508},{f:"51003",n:"Albemarle",s:"VA",p:117313},{f:"39169",n:"Wayne",s:"OH",p:116632},{f:"24037",n:"St. Mary's",s:"MD",p:116469},{f:"01015",n:"Calhoun",s:"AL",p:116427},{f:"46103",n:"Pennington",s:"SD",p:115979},{f:"05031",n:"Craighead",s:"AR",p:115852},{f:"19049",n:"Dallas",s:"IA",p:115343},
+{f:"51085",n:"Hanover",s:"VA",p:115309},{f:"23001",n:"Androscoggin",s:"ME",p:115272},{f:"48291",n:"Liberty",s:"TX",p:115042},{f:"48021",n:"Bastrop",s:"TX",p:114931},{f:"48375",n:"Potter",s:"TX",p:114649},{f:"30029",n:"Flathead",s:"MT",p:114527},{f:"28089",n:"Madison",s:"MS",p:114247},{f:"09160",n:"Northwest Hills Planning Region",s:"CT",p:114101},{f:"53015",n:"Cowlitz",s:"WA",p:113982},{f:"29037",n:"Cass",s:"MO",p:113873},
+{f:"47011",n:"Bradley",s:"TN",p:113782},{f:"47119",n:"Maury",s:"TN",p:113411},{f:"42081",n:"Lycoming",s:"PA",p:113236},{f:"29165",n:"Platte",s:"MO",p:113207},{f:"36045",n:"Jefferson",s:"NY",p:113140},{f:"36069",n:"Ontario",s:"NY",p:113012},{f:"18035",n:"Delaware",s:"IN",p:112951},{f:"21093",n:"Hardin",s:"KY",p:112826},{f:"27019",n:"Carver",s:"MN",p:112628},{f:"41019",n:"Douglas",s:"OR",p:112255},
+{f:"34041",n:"Warren",s:"NJ",p:112031},{f:"39109",n:"Miami",s:"OH",p:111950},{f:"45057",n:"Lancaster",s:"SC",p:111652},{f:"18091",n:"LaPorte",s:"IN",p:111348},{f:"41071",n:"Yamhill",s:"OR",p:110886},{f:"13297",n:"Walton",s:"GA",p:109792},{f:"12055",n:"Highlands",s:"FL",p:109778},{f:"04017",n:"Navajo",s:"AZ",p:109516},{f:"26045",n:"Eaton",s:"MI",p:109494},{f:"01069",n:"Houston",s:"AL",p:109366},
+{f:"55035",n:"Eau Claire",s:"WI",p:108830},{f:"54061",n:"Monongalia",s:"WV",p:108697},{f:"37125",n:"Moore",s:"NC",p:108417},{f:"17099",n:"LaSalle",s:"IL",p:108390},{f:"42085",n:"Mercer",s:"PA",p:108140},{f:"42001",n:"Adams",s:"PA",p:107914},{f:"19193",n:"Woodbury",s:"IA",p:107257},{f:"29071",n:"Franklin",s:"MO",p:107256},{f:"17091",n:"Kankakee",s:"IL",p:106410},{f:"24045",n:"Wicomico",s:"MD",p:106329},
+{f:"24015",n:"Cecil",s:"MD",p:106305},{f:"36089",n:"St. Lawrence",s:"NY",p:106198},{f:"18167",n:"Vigo",s:"IN",p:106166},{f:"55127",n:"Walworth",s:"WI",p:106029},{f:"36109",n:"Tompkins",s:"NY",p:105602},{f:"13313",n:"Whitfield",s:"GA",p:105070},{f:"45085",n:"Sumter",s:"SC",p:104776},{f:"53025",n:"Grant",s:"WA",p:104717},{f:"21059",n:"Daviess",s:"KY",p:104457},{f:"12089",n:"Nassau",s:"FL",p:104376},
+{f:"55039",n:"Fond du Lac",s:"WI",p:104269},{f:"37049",n:"Craven",s:"NC",p:104167},{f:"22109",n:"Terrebonne",s:"LA",p:103864},{f:"01055",n:"Etowah",s:"AL",p:103207},{f:"38015",n:"Burleigh",s:"ND",p:103107},{f:"51800",n:"Suffolk",s:"VA",p:103105},{f:"27141",n:"Sherburne",s:"MN",p:103059},{f:"26017",n:"Bay",s:"MI",p:102651},{f:"19169",n:"Story",s:"IA",p:102498},{f:"06057",n:"Nevada",s:"CA",p:102195},
+{f:"37045",n:"Cleveland",s:"NC",p:102194},{f:"01095",n:"Marshall",s:"AL",p:102156},{f:"56021",n:"Laramie",s:"WY",p:101783},{f:"13115",n:"Floyd",s:"GA",p:101390},{f:"40131",n:"Rogers",s:"OK",p:101371},{f:"17037",n:"DeKalb",s:"IL",p:101335},{f:"53021",n:"Franklin",s:"WA",p:101238},{f:"39003",n:"Allen",s:"OH",p:100866},{f:"17115",n:"Macon",s:"IL",p:100737},{f:"47113",n:"Madison",s:"TN",p:100409},{f:"47155",n:"Sevier",s:"TN",p:100184}
 ];
 
-// ─── Storage ──────────────────────────────────────────────
-const STORAGE_KEY = "fcl-lag-checks";
-const COUNTY_KEY = "fcl-lag-county";
-
-function loadChecks() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-
-function saveChecks(checks) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
-  } catch (e) { console.error("Save failed:", e); }
-}
-
-function loadSelectedCounty() {
-  try {
-    return localStorage.getItem(COUNTY_KEY) || COUNTIES[0].id;
-  } catch { return COUNTIES[0].id; }
-}
-
-function saveSelectedCounty(id) {
-  try { localStorage.setItem(COUNTY_KEY, id); } catch {}
-}
-
 // ─── State ────────────────────────────────────────────────
-let checks = loadChecks();
-let selectedCountyId = loadSelectedCounty();
+const STORE_KEY = "fcl-lag-v2";
+let state = loadState();
+let currentRunId = null;
+let sortCol = "lag";
+let sortDir = "asc"; // for lag: ascending = smallest first
+let isRunning = false;
+let abortRun = false;
 
-function getCounty() {
-  return COUNTIES.find(c => c.id === selectedCountyId) || COUNTIES[0];
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { token: "", runs: [] }; }
+  catch { return { token: "", runs: [] }; }
 }
-
-function getCountyChecks() {
-  return checks.filter(c => c.countyId === selectedCountyId);
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
 }
 
 // ─── Helpers ──────────────────────────────────────────────
-function formatDatePST(dateStr) {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", year: "numeric" });
-}
+function lagClass(d) { if (d === null || d === undefined) return "lag-na"; if (d <= 3) return "lag-g"; if (d <= 7) return "lag-a"; return "lag-r"; }
+function fmtDate(d) { if (!d) return "—"; return new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }
+function fmtPop(n) { return n.toLocaleString(); }
+function fmtTS(iso) { return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); }
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); }
 
-function formatTimestampPST(iso) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-}
-
-function calcLag(countyDate, prDate) {
-  return Math.round((new Date(countyDate + "T00:00:00") - new Date(prDate + "T00:00:00")) / 86400000);
-}
-
-function lagColor(days) {
-  if (days <= 3) return "var(--green)";
-  if (days <= 7) return "var(--amber)";
-  return "var(--red)";
-}
-
-function lagBg(days) {
-  if (days <= 3) return "var(--green-bg)";
-  if (days <= 7) return "var(--amber-bg)";
-  return "var(--red-bg)";
-}
-
-function lagColorHex(days) {
-  if (days <= 3) return "#66BB6A";
-  if (days <= 7) return "#FFB74D";
-  return "#C62828";
-}
-
-// ─── Render: County Selector ──────────────────────────────
-function renderCountySelector() {
-  const sel = document.getElementById("countySelect");
-  sel.innerHTML = COUNTIES.map(c =>
-    `<option value="${c.id}" ${c.id === selectedCountyId ? "selected" : ""}>${c.name}, ${c.state}</option>`
-  ).join("");
-  sel.onchange = (e) => {
-    selectedCountyId = e.target.value;
-    saveSelectedCounty(selectedCountyId);
-    renderAll();
-  };
-}
-
-// ─── Render: Form Cards ──────────────────────────────────
-function renderFormCards() {
-  const county = getCounty();
-  const src = county.countySource;
-  const pr = county.prSource;
-
-  function makeCard(stepLabel, source, inputId) {
-    const steps = source.instructions.map((inst, i) =>
-      `<div class="instruction"><span class="step-num">${i + 1}</span><span>${inst}</span></div>`
-    ).join("");
-    return `
-      <div class="card">
-        <div class="card-label">
-          ${stepLabel}: ${source.label}
-          <a href="${source.url}" target="_blank" rel="noopener noreferrer" class="ext-link">Open ↗</a>
-        </div>
-        ${steps}
-        <label class="input-label">${source.dateFieldLabel}</label>
-        <input type="date" id="${inputId}" oninput="updatePreview()" />
-      </div>
-    `;
-  }
-
-  document.getElementById("formCards").innerHTML =
-    makeCard("Step 1", src, "countyDateInput") +
-    makeCard("Step 2", pr, "prDateInput");
-}
-
-// ─── Render: Lag Display ──────────────────────────────────
-function renderLagDisplay() {
-  const cc = getCountyChecks();
-  const el = document.getElementById("lagDisplay");
-  if (cc.length === 0) {
-    el.style.display = "none";
-    return;
-  }
-  const latest = cc[0];
-  const county = getCounty();
-  const color = lagColor(latest.lagDays);
-  const bg = lagBg(latest.lagDays);
-  const abs = Math.abs(latest.lagDays);
-  const plural = abs !== 1 ? "s" : "";
-  const label = latest.lagDays >= 0
-    ? `PropertyRadar is ${latest.lagDays} day${plural} behind ${county.name}`
-    : `PropertyRadar is ${abs} day${plural} ahead of ${county.name} (unusual)`;
-
-  el.style.display = "block";
-  el.className = "lag-display fade-in";
-  el.style.background = bg;
-  el.style.borderColor = color;
-  el.innerHTML = `
-    <div class="lag-num" style="color:${color}">${latest.lagDays}</div>
-    <div class="lag-label" style="color:${color}">${label}</div>
-    <div class="lag-meta">Last checked ${formatTimestampPST(latest.checkedAt)}</div>
-  `;
-}
-
-// ─── Render: Chart ────────────────────────────────────────
-function renderChart() {
-  const cc = getCountyChecks();
-  const section = document.getElementById("chartSection");
-  const county = getCounty();
-  document.getElementById("chartTitle").textContent = `Lag Trend — ${county.name}`;
-
-  if (cc.length === 0) {
-    section.style.display = "none";
-    return;
-  }
-  section.style.display = "block";
-
-  const data = [...cc].reverse().slice(-30); // oldest to newest, last 30
-  const PAD = { top: 28, right: 20, bottom: 44, left: 44 };
-  const W = 700, H = 260;
-  const IW = W - PAD.left - PAD.right;
-  const IH = H - PAD.top - PAD.bottom;
-
-  const maxLag = Math.max(...data.map(d => d.lagDays), 7);
-  const yMax = Math.ceil(maxLag / 5) * 5 || 10;
-  const yTicks = [];
-  const step = Math.max(1, Math.ceil(yMax / 5));
-  for (let i = 0; i <= yMax; i += step) yTicks.push(i);
-
-  function xP(i) { return data.length === 1 ? PAD.left + IW / 2 : PAD.left + (i / (data.length - 1)) * IW; }
-  function yP(v) { return PAD.top + IH - (v / yMax) * IH; }
-
-  const thresholds = [
-    { days: 3, color: "#66BB6A", label: "3d" },
-    { days: 7, color: "#FFB74D", label: "7d" },
-  ];
-
-  let svg = `<svg viewBox="0 0 ${W} ${H}">`;
-
-  // Y grid
-  yTicks.forEach(t => {
-    svg += `<line x1="${PAD.left}" y1="${yP(t)}" x2="${W - PAD.right}" y2="${yP(t)}" stroke="#E8E5E0" stroke-dasharray="4 4"/>`;
-    svg += `<text x="${PAD.left - 8}" y="${yP(t) + 4}" text-anchor="end" font-size="11" fill="#6B6F72" font-family="DM Sans, sans-serif">${t}d</text>`;
-  });
-
-  // Thresholds
-  thresholds.forEach(t => {
-    if (t.days <= yMax) {
-      svg += `<line x1="${PAD.left}" y1="${yP(t.days)}" x2="${W - PAD.right}" y2="${yP(t.days)}" stroke="${t.color}" stroke-dasharray="6 3" stroke-width="1.5" opacity="0.5"/>`;
-      svg += `<text x="${W - PAD.right + 4}" y="${yP(t.days) + 4}" font-size="10" fill="${t.color}" font-family="DM Sans, sans-serif">${t.label}</text>`;
-    }
-  });
-
-  // X labels
-  const labelStep = Math.max(1, Math.floor(data.length / 8));
-  data.forEach((d, i) => {
-    if (i % labelStep === 0) {
-      const dt = new Date(d.checkedAt);
-      const lbl = `${dt.getMonth() + 1}/${dt.getDate()}`;
-      svg += `<text x="${xP(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#6B6F72" font-family="DM Sans, sans-serif">${lbl}</text>`;
-    }
-  });
-
-  // Line
-  const path = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xP(i)} ${yP(d.lagDays)}`).join(" ");
-  svg += `<path d="${path}" fill="none" stroke="#D8A7B1" stroke-width="2.5" stroke-linejoin="round"/>`;
-
-  // Dots + labels
-  data.forEach((d, i) => {
-    const c = lagColorHex(d.lagDays);
-    svg += `<circle cx="${xP(i)}" cy="${yP(d.lagDays)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
-    svg += `<text x="${xP(i)}" y="${yP(d.lagDays) - 10}" text-anchor="middle" font-size="10" font-weight="600" fill="#1B1B1B" font-family="DM Sans, sans-serif">${d.lagDays}</text>`;
-  });
-
-  // Y-axis label
-  svg += `<text x="14" y="${PAD.top + IH / 2}" text-anchor="middle" font-size="11" fill="#6B6F72" font-family="DM Sans, sans-serif" transform="rotate(-90, 14, ${PAD.top + IH / 2})">Lag (days)</text>`;
-  svg += `</svg>`;
-
-  document.getElementById("chartWrap").innerHTML = svg;
-}
-
-// ─── Render: History ──────────────────────────────────────
-function renderHistory() {
-  const cc = getCountyChecks();
-  const titleEl = document.getElementById("historyTitle");
-  titleEl.innerHTML = `Check History <span class="count">(${cc.length} record${cc.length !== 1 ? "s" : ""})</span>`;
-
-  const content = document.getElementById("historyContent");
-  if (cc.length === 0) {
-    const county = getCounty();
-    content.innerHTML = `<div class="empty">No checks yet for ${county.name}. Use the form above to record your first lag check.</div>`;
-    return;
-  }
-
-  let html = `<div class="card table-wrap">`;
-  html += `<div class="table-row table-header"><span>Checked</span><span>County Date</span><span>PR Date</span><span>Lag</span><span></span></div>`;
-  cc.forEach(check => {
-    const color = lagColor(check.lagDays);
-    html += `<div class="table-row">
-      <span style="font-size:0.84rem">${formatTimestampPST(check.checkedAt)}</span>
-      <span>${formatDatePST(check.countyDate)}</span>
-      <span>${formatDatePST(check.prDate)}</span>
-      <span style="font-weight:700;color:${color}">${check.lagDays}d</span>
-      <button class="btn-delete" onclick="deleteCheck('${check.id}')" title="Delete">✕</button>
-    </div>`;
-    if (check.notes) {
-      html += `<div class="row-notes">${escHtml(check.notes)}</div>`;
-    }
-  });
-  html += `</div>`;
-  content.innerHTML = html;
-}
-
-function escHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-// ─── Preview ──────────────────────────────────────────────
-function updatePreview() {
-  const cd = document.getElementById("countyDateInput")?.value;
-  const pd = document.getElementById("prDateInput")?.value;
-  const el = document.getElementById("lagPreview");
-  if (cd && pd) {
-    const lag = calcLag(cd, pd);
-    const plural = Math.abs(lag) !== 1 ? "s" : "";
-    el.style.display = "block";
-    el.style.color = lagColor(lag);
-    el.textContent = `Lag preview: ${lag} day${plural}`;
+// ─── Init ─────────────────────────────────────────────────
+function init() {
+  if (state.token) {
+    showDashboard();
   } else {
-    el.style.display = "none";
+    document.getElementById("setupScreen").style.display = "";
+  }
+  populateStateFilter();
+}
+
+function saveToken() {
+  const token = document.getElementById("setupToken").value.trim();
+  if (!token) { alert("Please enter your API token."); return; }
+  state.token = token;
+  saveState();
+  showDashboard();
+}
+
+function showDashboard() {
+  document.getElementById("setupScreen").style.display = "none";
+  document.getElementById("dashboard").style.display = "";
+  document.getElementById("headerActions").style.display = "flex";
+  if (state.runs.length > 0) {
+    currentRunId = state.runs[0].id;
+    renderRunHistory();
+    renderStats();
+    renderTable();
+  } else {
+    renderTable();
   }
 }
 
-// ─── Actions ──────────────────────────────────────────────
-function handleSubmit() {
-  const errorEl = document.getElementById("errorMsg");
-  errorEl.style.display = "none";
+function showSettings() {
+  document.getElementById("settingsToken").value = state.token;
+  document.getElementById("settingsModal").style.display = "flex";
+}
+function hideSettings() { document.getElementById("settingsModal").style.display = "none"; }
+function updateToken() {
+  const token = document.getElementById("settingsToken").value.trim();
+  if (!token) { alert("Token required."); return; }
+  state.token = token;
+  saveState();
+  hideSettings();
+  toast("API token updated");
+}
+function clearAllData() {
+  if (confirm("Delete all stored data? This cannot be undone.")) {
+    localStorage.removeItem(STORE_KEY);
+    location.reload();
+  }
+}
 
-  const cd = document.getElementById("countyDateInput").value;
-  const pd = document.getElementById("prDateInput").value;
-  const notes = document.getElementById("notesInput").value.trim();
+// ─── State filter ─────────────────────────────────────────
+function populateStateFilter() {
+  const states = [...new Set(C.map(c => c.s))].sort();
+  const sel = document.getElementById("filterState");
+  states.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s; sel.appendChild(o); });
+}
 
-  if (!cd) { errorEl.textContent = "Please enter the county recording date."; errorEl.style.display = "block"; return; }
-  if (!pd) { errorEl.textContent = "Please enter the PropertyRadar date."; errorEl.style.display = "block"; return; }
+// ─── API Calls ────────────────────────────────────────────
+const API_BASE = location.hostname === "localhost" ? "http://localhost:3000/api/pr-proxy" : "/api/pr-proxy";
 
-  const lag = calcLag(cd, pd);
-  const newCheck = {
-    id: "check-" + Date.now(),
-    countyId: selectedCountyId,
-    countyDate: cd,
-    prDate: pd,
-    lagDays: lag,
-    checkedAt: new Date().toISOString(),
-    notes: notes,
+async function fetchCountyLag(county) {
+  // Search for latest foreclosure in this county by FIPS
+  const stFips = county.f.slice(0, 2);
+  const coFips = county.f.slice(2);
+
+  const criteria = JSON.stringify({
+    InForeclosure: true,
+    Fips: county.f
+  });
+
+  const params = new URLSearchParams({
+    path: "/v1/properties",
+    Criteria: criteria,
+    Fields: "NoticeRecordingDate,NoticePublishedDate,Address",
+    Sort: "NoticeRecordingDate desc",
+    Limit: "1",
+    Purchase: "1"
+  });
+
+  const resp = await fetch(`${API_BASE}?${params}`, {
+    headers: { Authorization: `Bearer ${state.token}` }
+  });
+
+  if (resp.status === 401) throw new Error("Invalid API token");
+  if (resp.status === 429) throw new Error("Rate limited — slow down");
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`API error ${resp.status}: ${text.slice(0, 200)}`);
+  }
+
+  const data = await resp.json();
+
+  // PR API returns an array of properties or a results object
+  const properties = Array.isArray(data) ? data : (data.results || data.Properties || []);
+  if (!properties || properties.length === 0) {
+    return { fips: county.f, lag: null, recDate: null, pubDate: null };
+  }
+
+  const prop = properties[0];
+  const recDate = prop.NoticeRecordingDate || prop.noticeRecordingDate || null;
+  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || null;
+
+  let lag = null;
+  if (recDate && pubDate) {
+    const r = new Date(recDate);
+    const p = new Date(pubDate);
+    lag = Math.round((p - r) / 86400000);
+  }
+
+  return { fips: county.f, lag, recDate, pubDate };
+}
+
+// ─── Run Check ────────────────────────────────────────────
+async function startRun() {
+  if (isRunning) {
+    abortRun = true;
+    return;
+  }
+
+  isRunning = true;
+  abortRun = false;
+  const runBtn = document.getElementById("runBtn");
+  runBtn.textContent = "■ Stop";
+
+  const progressWrap = document.getElementById("progressWrap");
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+  progressWrap.style.display = "";
+
+  const runId = "run-" + Date.now();
+  const results = [];
+  const total = C.length;
+  let errors = 0;
+
+  for (let i = 0; i < total; i++) {
+    if (abortRun) break;
+
+    const county = C[i];
+    const pct = ((i + 1) / total * 100).toFixed(1);
+    progressFill.style.width = pct + "%";
+    progressText.textContent = `Checking ${county.n}, ${county.s} (${i + 1} of ${total})...`;
+
+    try {
+      const result = await fetchCountyLag(county);
+      results.push(result);
+    } catch (err) {
+      errors++;
+      results.push({ fips: county.f, lag: null, recDate: null, pubDate: null, error: err.message });
+
+      // If auth error, stop immediately
+      if (err.message.includes("Invalid API token")) {
+        toast("Invalid API token — check Settings");
+        break;
+      }
+
+      // If rate limited, wait and retry
+      if (err.message.includes("Rate limited")) {
+        progressText.textContent = `Rate limited — waiting 10s before retry...`;
+        await new Promise(r => setTimeout(r, 10000));
+        i--; // retry this county
+        results.pop();
+        errors--;
+        continue;
+      }
+    }
+
+    // Small delay between requests to avoid rate limits
+    if (i < total - 1) {
+      await new Promise(r => setTimeout(r, 200));
+    }
+  }
+
+  // Save run
+  const run = {
+    id: runId,
+    date: new Date().toISOString(),
+    totalChecked: results.length,
+    errors,
+    results
   };
+  state.runs.unshift(run);
+  if (state.runs.length > 20) state.runs = state.runs.slice(0, 20); // Keep last 20 runs
+  saveState();
 
-  checks.unshift(newCheck);
-  saveChecks(checks);
+  currentRunId = runId;
+  isRunning = false;
+  runBtn.textContent = "▶ Run Check";
+  progressWrap.style.display = "none";
 
-  // Reset form
-  document.getElementById("countyDateInput").value = "";
-  document.getElementById("prDateInput").value = "";
-  document.getElementById("notesInput").value = "";
-  document.getElementById("lagPreview").style.display = "none";
-
-  // Flash button
-  const btn = document.getElementById("submitBtn");
-  btn.classList.add("saved");
-  btn.textContent = "✓ Saved";
-  setTimeout(() => {
-    btn.classList.remove("saved");
-    btn.textContent = "Calculate & Save";
-  }, 2500);
-
-  renderLagDisplay();
-  renderChart();
-  renderHistory();
+  renderRunHistory();
+  renderStats();
+  renderTable();
+  toast(`Check complete: ${results.length} counties checked, ${errors} errors`);
 }
 
-function deleteCheck(id) {
-  checks = checks.filter(c => c.id !== id);
-  saveChecks(checks);
-  renderLagDisplay();
-  renderChart();
-  renderHistory();
+// ─── Render: Run History ──────────────────────────────────
+function renderRunHistory() {
+  const section = document.getElementById("runHistorySection");
+  if (state.runs.length === 0) { section.style.display = "none"; return; }
+  section.style.display = "";
+  const list = document.getElementById("runList");
+  list.innerHTML = state.runs.map(r =>
+    `<div class="run-chip ${r.id === currentRunId ? "active" : ""}" onclick="selectRun('${r.id}')">${fmtTS(r.date)} (${r.totalChecked})</div>`
+  ).join("");
 }
 
-function exportData() {
-  const data = { "fcl-lag-checks": checks };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+function selectRun(id) {
+  currentRunId = id;
+  renderRunHistory();
+  renderStats();
+  renderTable();
+}
+
+// ─── Render: Stats ────────────────────────────────────────
+function renderStats() {
+  const run = state.runs.find(r => r.id === currentRunId);
+  if (!run) return;
+  const lags = run.results.filter(r => r.lag !== null).map(r => r.lag);
+  if (lags.length === 0) {
+    ["statAvg","statMedian","statBest","statWorst"].forEach(id => document.getElementById(id).textContent = "—");
+    document.getElementById("statChecked").textContent = run.totalChecked;
+    return;
+  }
+  lags.sort((a, b) => a - b);
+  const avg = (lags.reduce((s, v) => s + v, 0) / lags.length).toFixed(1);
+  const median = lags[Math.floor(lags.length / 2)];
+
+  // Best & worst county
+  let bestLag = Infinity, worstLag = -Infinity, bestFips = "", worstFips = "";
+  run.results.forEach(r => {
+    if (r.lag !== null) {
+      if (r.lag < bestLag) { bestLag = r.lag; bestFips = r.fips; }
+      if (r.lag > worstLag) { worstLag = r.lag; worstFips = r.fips; }
+    }
+  });
+  const bestC = C.find(c => c.f === bestFips);
+  const worstC = C.find(c => c.f === worstFips);
+
+  document.getElementById("statAvg").textContent = avg + "d";
+  document.getElementById("statAvg").style.color = avg <= 3 ? "var(--green)" : avg <= 7 ? "var(--amber)" : "var(--red)";
+  document.getElementById("statMedian").textContent = median + "d";
+  document.getElementById("statBest").textContent = bestC ? `${bestLag}d` : "—";
+  document.getElementById("statBest").title = bestC ? `${bestC.n}, ${bestC.s}` : "";
+  document.getElementById("statBest").parentElement.querySelector(".stat-label").textContent = bestC ? `Best: ${bestC.n}, ${bestC.s}` : "Best County";
+  document.getElementById("statWorst").textContent = worstC ? `${worstLag}d` : "—";
+  document.getElementById("statWorst").parentElement.querySelector(".stat-label").textContent = worstC ? `Worst: ${worstC.n}, ${worstC.s}` : "Worst County";
+  document.getElementById("statChecked").textContent = lags.length + "/" + run.totalChecked;
+}
+
+// ─── Render: Table ────────────────────────────────────────
+function renderTable() {
+  const run = state.runs.find(r => r.id === currentRunId);
+  const resultMap = {};
+  if (run) run.results.forEach(r => resultMap[r.fips] = r);
+
+  const stateFilter = document.getElementById("filterState").value;
+  const searchFilter = document.getElementById("filterSearch").value.toLowerCase().trim();
+  const lagFilter = document.getElementById("filterLag").value;
+
+  let rows = C.map(county => {
+    const r = resultMap[county.f] || {};
+    return { ...county, lag: r.lag ?? null, recDate: r.recDate || null, pubDate: r.pubDate || null };
+  });
+
+  // Filters
+  if (stateFilter) rows = rows.filter(r => r.s === stateFilter);
+  if (searchFilter) rows = rows.filter(r => r.n.toLowerCase().includes(searchFilter) || r.s.toLowerCase().includes(searchFilter));
+  if (lagFilter === "good") rows = rows.filter(r => r.lag !== null && r.lag <= 3);
+  else if (lagFilter === "ok") rows = rows.filter(r => r.lag !== null && r.lag >= 4 && r.lag <= 7);
+  else if (lagFilter === "bad") rows = rows.filter(r => r.lag !== null && r.lag >= 8);
+  else if (lagFilter === "na") rows = rows.filter(r => r.lag === null);
+
+  // Sort
+  rows.sort((a, b) => {
+    let va, vb;
+    switch (sortCol) {
+      case "county": va = a.n; vb = b.n; break;
+      case "state": va = a.s; vb = b.s; break;
+      case "pop": va = a.p; vb = b.p; break;
+      case "lag": va = a.lag ?? 9999; vb = b.lag ?? 9999; break;
+      case "recDate": va = a.recDate || ""; vb = b.recDate || ""; break;
+      case "pubDate": va = a.pubDate || ""; vb = b.pubDate || ""; break;
+      default: va = a.lag ?? 9999; vb = b.lag ?? 9999;
+    }
+    if (typeof va === "string") {
+      const cmp = va.localeCompare(vb);
+      return sortDir === "asc" ? cmp : -cmp;
+    }
+    return sortDir === "asc" ? va - vb : vb - va;
+  });
+
+  // Update sort arrows
+  document.querySelectorAll(".tbl th").forEach(th => {
+    const col = th.dataset.sort;
+    if (col === sortCol) {
+      th.classList.add("active");
+      th.querySelector(".sort-arrow").textContent = sortDir === "asc" ? "↑" : "↓";
+    } else {
+      th.classList.remove("active");
+      th.querySelector(".sort-arrow").textContent = "↕";
+    }
+  });
+
+  const tbody = document.getElementById("tableBody");
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">No matching counties. ${!run ? 'Click "Run Check" to get started.' : ''}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => {
+    const lagDisplay = r.lag !== null
+      ? `<span class="lag-cell ${lagClass(r.lag)}">${r.lag}d</span>`
+      : `<span class="lag-cell lag-na">—</span>`;
+    return `<tr>
+      <td><strong>${r.n}</strong></td>
+      <td>${r.s}</td>
+      <td>${fmtPop(r.p)}</td>
+      <td>${lagDisplay}</td>
+      <td>${fmtDate(r.recDate)}</td>
+      <td>${fmtDate(r.pubDate)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function setSort(col) {
+  if (sortCol === col) {
+    sortDir = sortDir === "asc" ? "desc" : "asc";
+  } else {
+    sortCol = col;
+    sortDir = col === "pop" ? "desc" : "asc";
+  }
+  renderTable();
+}
+
+// ─── Export CSV ───────────────────────────────────────────
+function exportCSV() {
+  const run = state.runs.find(r => r.id === currentRunId);
+  if (!run) { toast("No data to export. Run a check first."); return; }
+
+  const resultMap = {};
+  run.results.forEach(r => resultMap[r.fips] = r);
+
+  let csv = "FIPS,County,State,Population,LagDays,NoticeRecDate,PRPublishedDate\n";
+  C.forEach(county => {
+    const r = resultMap[county.f] || {};
+    csv += `${county.f},"${county.n}",${county.s},${county.p},${r.lag ?? ""},${r.recDate || ""},${r.pubDate || ""}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `fcl-lag-backup-${new Date().toISOString().split("T")[0]}.json`;
+  a.download = `fcl-lag-${new Date().toISOString().split("T")[0]}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  toast("CSV downloaded");
 }
 
-function importData(event) {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data["fcl-lag-checks"]) {
-        checks = data["fcl-lag-checks"];
-        saveChecks(checks);
-        renderAll();
-      } else {
-        alert("No lag tracker data found in this file.");
-      }
-    } catch {
-      alert("Invalid backup file.");
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = "";
-}
-
-// ─── Render All ───────────────────────────────────────────
-function renderAll() {
-  renderCountySelector();
-  renderFormCards();
-  renderLagDisplay();
-  renderChart();
-  renderHistory();
-}
-
-// ─── Init ─────────────────────────────────────────────────
-renderAll();
+// ─── Start ────────────────────────────────────────────────
+init();
 </script>
-
 </body>
 </html>
