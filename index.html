@@ -195,6 +195,14 @@
       </table>
     </div>
 
+    <!-- Debug Log -->
+    <div style="margin-top:28px">
+      <div class="sec-title">Debug Log <button class="btn btn-sm" onclick="document.getElementById('debugLog').textContent='';" style="margin-left:auto">Clear</button></div>
+      <div class="card" style="padding:12px;max-height:300px;overflow:auto">
+        <pre id="debugLog" style="font-size:.78rem;color:var(--muted);white-space:pre-wrap;word-break:break-all;margin:0;font-family:monospace"></pre>
+      </div>
+    </div>
+
     <!-- Methodology -->
     <div style="margin-top:28px">
       <div class="sec-title">Methodology</div>
@@ -223,8 +231,11 @@
 </div>
 
 <script>
-// ─── County Data (621 US counties with 100K+ population, 2024 Census) ─────
+// ─── County Data (5 TEST counties to start — will expand once API works) ─────
 const C=[
+{f:"04013",n:"Maricopa",s:"AZ",p:4673096},{f:"06037",n:"Los Angeles",s:"CA",p:9757179},{f:"12086",n:"Miami-Dade",s:"FL",p:2838461},{f:"48201",n:"Harris",s:"TX",p:5009302},{f:"32003",n:"Clark",s:"NV",p:2398871}
+];
+const C_FULL=[
 {f:"06037",n:"Los Angeles",s:"CA",p:9757179},{f:"17031",n:"Cook",s:"IL",p:5182617},{f:"48201",n:"Harris",s:"TX",p:5009302},{f:"04013",n:"Maricopa",s:"AZ",p:4673096},{f:"06073",n:"San Diego",s:"CA",p:3298799},{f:"06059",n:"Orange",s:"CA",p:3170435},{f:"12086",n:"Miami-Dade",s:"FL",p:2838461},{f:"48113",n:"Dallas",s:"TX",p:2656028},{f:"36047",n:"Kings",s:"NY",p:2617631},{f:"06065",n:"Riverside",s:"CA",p:2529933},
 {f:"32003",n:"Clark",s:"NV",p:2398871},{f:"53033",n:"King",s:"WA",p:2340211},{f:"36081",n:"Queens",s:"NY",p:2316841},{f:"48439",n:"Tarrant",s:"TX",p:2230708},{f:"06071",n:"San Bernardino",s:"CA",p:2214281},{f:"48029",n:"Bexar",s:"TX",p:2127737},{f:"12011",n:"Broward",s:"FL",p:2037472},{f:"06085",n:"Santa Clara",s:"CA",p:1926325},{f:"26163",n:"Wayne",s:"MI",p:1771063},{f:"25017",n:"Middlesex",s:"MA",p:1668956},
 {f:"36061",n:"New York",s:"NY",p:1660664},{f:"06001",n:"Alameda",s:"CA",p:1649060},{f:"06067",n:"Sacramento",s:"CA",p:1611231},{f:"12099",n:"Palm Beach",s:"FL",p:1582055},{f:"12057",n:"Hillsborough",s:"FL",p:1581426},{f:"42101",n:"Philadelphia",s:"PA",p:1573916},{f:"36103",n:"Suffolk",s:"NY",p:1535909},{f:"12095",n:"Orange",s:"FL",p:1533646},{f:"36059",n:"Nassau",s:"NY",p:1392438},{f:"36005",n:"Bronx",s:"NY",p:1384724},
@@ -375,53 +386,87 @@ function populateStateFilter() {
 // ─── API Calls ────────────────────────────────────────────
 const API_BASE = location.hostname === "localhost" ? "http://localhost:3000/api/pr-proxy" : "/api/pr-proxy";
 
+function dbg(msg) {
+  const el = document.getElementById("debugLog");
+  if (el) {
+    const ts = new Date().toLocaleTimeString();
+    el.textContent += `[${ts}] ${msg}\n`;
+    el.scrollTop = el.scrollHeight;
+  }
+  console.log(msg);
+}
+
 async function fetchCountyLag(county) {
-  // Search for latest foreclosure in this county by FIPS
-  const stFips = county.f.slice(0, 2);
-  const coFips = county.f.slice(2);
+  // PropertyRadar API: POST /v1/properties
+  // Criteria must be array of {name, value} objects
+  const body = {
+    Criteria: [
+      { name: "InForeclosure", value: [true] },
+      { name: "County", value: [county.n] }
+    ],
+    Fields: ["NoticeRecordingDate", "NoticePublishedDate", "SitusFullStreetAddress", "County"],
+    Limit: 1,
+    Purchase: 0
+  };
 
-  const criteria = JSON.stringify({
-    InForeclosure: true,
-    Fips: county.f
+  const proxyUrl = `${API_BASE}?path=/v1/properties`;
+  dbg(`POST ${proxyUrl}`);
+  dbg(`Body: ${JSON.stringify(body)}`);
+
+  const resp = await fetch(proxyUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${state.token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
   });
 
-  const params = new URLSearchParams({
-    path: "/v1/properties",
-    Criteria: criteria,
-    Fields: "NoticeRecordingDate,NoticePublishedDate,Address",
-    Sort: "NoticeRecordingDate desc",
-    Limit: "1",
-    Purchase: "1"
-  });
-
-  const resp = await fetch(`${API_BASE}?${params}`, {
-    headers: { Authorization: `Bearer ${state.token}` }
-  });
+  dbg(`Response status: ${resp.status}`);
 
   if (resp.status === 401) throw new Error("Invalid API token");
   if (resp.status === 429) throw new Error("Rate limited — slow down");
-  if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`API error ${resp.status}: ${text.slice(0, 200)}`);
-  }
 
   const data = await resp.json();
+  dbg(`Response data: ${JSON.stringify(data).slice(0, 500)}`);
 
-  // PR API returns an array of properties or a results object
-  const properties = Array.isArray(data) ? data : (data.results || data.Properties || []);
-  if (!properties || properties.length === 0) {
+  if (!resp.ok) {
+    throw new Error(`API error ${resp.status}: ${JSON.stringify(data).slice(0, 200)}`);
+  }
+
+  // PR API may return array directly, or {results:[...]}, or {properties:[...]}
+  let properties = [];
+  if (Array.isArray(data)) {
+    properties = data;
+  } else if (data.results && Array.isArray(data.results)) {
+    properties = data.results;
+  } else if (data.Properties && Array.isArray(data.Properties)) {
+    properties = data.Properties;
+  } else if (data.properties && Array.isArray(data.properties)) {
+    properties = data.properties;
+  }
+
+  dbg(`Found ${properties.length} properties for ${county.n}, ${county.s}`);
+
+  if (properties.length === 0) {
     return { fips: county.f, lag: null, recDate: null, pubDate: null };
   }
 
   const prop = properties[0];
-  const recDate = prop.NoticeRecordingDate || prop.noticeRecordingDate || null;
-  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || null;
+  dbg(`First property keys: ${Object.keys(prop).join(", ")}`);
+
+  // Try multiple possible field name formats
+  const recDate = prop.NoticeRecordingDate || prop.noticeRecordingDate || prop.ForeclosureRecDate || prop.foreclosureRecDate || null;
+  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || prop.NoticePublishDate || null;
+
+  dbg(`recDate=${recDate}, pubDate=${pubDate}`);
 
   let lag = null;
   if (recDate && pubDate) {
     const r = new Date(recDate);
     const p = new Date(pubDate);
     lag = Math.round((p - r) / 86400000);
+    dbg(`Lag for ${county.n}: ${lag} days`);
   }
 
   return { fips: county.f, lag, recDate, pubDate };
@@ -444,6 +489,12 @@ async function startRun() {
   const progressText = document.getElementById("progressText");
   progressWrap.style.display = "";
 
+  // Clear debug log for fresh run
+  document.getElementById("debugLog").textContent = "";
+  dbg(`Starting run with ${C.length} test counties...`);
+  dbg(`API base: ${API_BASE}`);
+  dbg(`Token: ${state.token ? state.token.slice(0, 8) + "..." : "MISSING"}`);
+
   const runId = "run-" + Date.now();
   const results = [];
   const total = C.length;
@@ -462,6 +513,7 @@ async function startRun() {
       results.push(result);
     } catch (err) {
       errors++;
+      dbg(`ERROR for ${county.n}, ${county.s}: ${err.message}`);
       results.push({ fips: county.f, lag: null, recDate: null, pubDate: null, error: err.message });
 
       // If auth error, stop immediately
@@ -472,6 +524,7 @@ async function startRun() {
 
       // If rate limited, wait and retry
       if (err.message.includes("Rate limited")) {
+        dbg("Rate limited — waiting 10s before retry...");
         progressText.textContent = `Rate limited — waiting 10s before retry...`;
         await new Promise(r => setTimeout(r, 10000));
         i--; // retry this county
