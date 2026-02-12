@@ -17,15 +17,20 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "Missing or invalid Authorization header" });
   }
 
-  // The client sends the PR API path in the query string
-  // e.g., /api/pr-proxy?path=/v1/properties
-  const { path } = req.query;
+  // The client sends the PR API path and other query params
+  // e.g., /api/pr-proxy?path=/v1/properties&Fields=Address,County&Limit=1&Purchase=0
+  const { path, ...extraParams } = req.query;
   if (!path) {
     return res.status(400).json({ error: "Missing 'path' query parameter" });
   }
 
   const prBase = "https://api.propertyradar.com";
-  const url = prBase + path;
+  const prUrl = new URL(path, prBase);
+  // Forward all extra query params (Fields, Limit, Purchase, Sort, etc.) to PR API
+  for (const [key, value] of Object.entries(extraParams)) {
+    prUrl.searchParams.set(key, value);
+  }
+  const url = prUrl.toString();
 
   try {
     const fetchOptions = {

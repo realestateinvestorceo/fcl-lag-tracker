@@ -398,18 +398,28 @@ function dbg(msg) {
 
 async function fetchCountyLag(county) {
   // PropertyRadar API: POST /v1/properties
-  // Criteria must be array of {name, value} objects
+  // Per swagger spec:
+  //   - Criteria goes in POST body as array of {name, value}
+  //   - Fields, Limit, Purchase, Sort go as QUERY PARAMETERS
+  //   - County criterion takes FIPS code, not name
+
   const body = {
     Criteria: [
-      { name: "InForeclosure", value: ["1"] },
-      { name: "County", value: [county.n] }
-    ],
-    Fields: ["NoticeRecordingDate", "NoticePublishedDate", "SitusFullStreetAddress", "County"],
-    Limit: 1,
-    Purchase: 1
+      { name: "inForeclosure", value: [1] },
+      { name: "County", value: [county.f] }
+    ]
   };
 
-  const proxyUrl = `${API_BASE}?path=/v1/properties`;
+  // Build query params: Fields, Limit, Purchase, Sort
+  const qp = new URLSearchParams({
+    path: "/v1/properties",
+    Fields: "ForeclosureRecDate,ForeclosureStage,Address,County",
+    Limit: "1",
+    Sort: "ForeclosureRecDate DESC",
+    Purchase: "0"
+  });
+
+  const proxyUrl = `${API_BASE}?${qp}`;
   dbg(`POST ${proxyUrl}`);
   dbg(`Body: ${JSON.stringify(body)}`);
 
@@ -428,13 +438,13 @@ async function fetchCountyLag(county) {
   if (resp.status === 429) throw new Error("Rate limited — slow down");
 
   const data = await resp.json();
-  dbg(`Response data: ${JSON.stringify(data).slice(0, 500)}`);
+  dbg(`Response data: ${JSON.stringify(data).slice(0, 800)}`);
 
   if (!resp.ok) {
-    throw new Error(`API error ${resp.status}: ${JSON.stringify(data).slice(0, 200)}`);
+    throw new Error(`API error ${resp.status}: ${JSON.stringify(data).slice(0, 300)}`);
   }
 
-  // PR API may return array directly, or {results:[...]}, or {properties:[...]}
+  // PR API returns { results: [...] }
   let properties = [];
   if (Array.isArray(data)) {
     properties = data;
@@ -442,8 +452,6 @@ async function fetchCountyLag(county) {
     properties = data.results;
   } else if (data.Properties && Array.isArray(data.Properties)) {
     properties = data.Properties;
-  } else if (data.properties && Array.isArray(data.properties)) {
-    properties = data.properties;
   }
 
   dbg(`Found ${properties.length} properties for ${county.n}, ${county.s}`);
@@ -454,10 +462,14 @@ async function fetchCountyLag(county) {
 
   const prop = properties[0];
   dbg(`First property keys: ${Object.keys(prop).join(", ")}`);
+  dbg(`Full first property: ${JSON.stringify(prop).slice(0, 500)}`);
 
-  // Try multiple possible field name formats
-  const recDate = prop.NoticeRecordingDate || prop.noticeRecordingDate || prop.ForeclosureRecDate || prop.foreclosureRecDate || null;
-  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || prop.NoticePublishDate || null;
+  // ForeclosureRecDate = when county recorded it
+  // We need to figure out the "published" date from the API response
+  const recDate = prop.ForeclosureRecDate || prop.foreclosureRecDate || prop.NoticeRecordingDate || null;
+
+  // For "published" date, check all likely field names
+  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || prop.ForeclosurePublishedDate || null;
 
   dbg(`recDate=${recDate}, pubDate=${pubDate}`);
 
@@ -467,6 +479,8 @@ async function fetchCountyLag(county) {
     const p = new Date(pubDate);
     lag = Math.round((p - r) / 86400000);
     dbg(`Lag for ${county.n}: ${lag} days`);
+  } else {
+    dbg(`Cannot compute lag — missing date field(s)`);
   }
 
   return { fips: county.f, lag, recDate, pubDate };
