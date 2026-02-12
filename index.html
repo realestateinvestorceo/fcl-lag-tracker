@@ -401,12 +401,12 @@ async function fetchCountyLag(county) {
   // Criteria must be array of {name, value} objects
   const body = {
     Criteria: [
-      { name: "InForeclosure", value: [true] },
+      { name: "InForeclosure", value: ["1"] },
       { name: "County", value: [county.n] }
     ],
     Fields: ["NoticeRecordingDate", "NoticePublishedDate", "SitusFullStreetAddress", "County"],
     Limit: 1,
-    Purchase: 0
+    Purchase: 1
   };
 
   const proxyUrl = `${API_BASE}?path=/v1/properties`;
