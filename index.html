@@ -415,7 +415,7 @@ async function fetchCountyLag(county) {
     path: "/v1/properties",
     Fields: "ForeclosureRecDate,ForeclosureStage,Address,County",
     Limit: "1",
-    Purchase: "0"
+    Purchase: "1"
   });
 
   const proxyUrl = `${API_BASE}?${qp}`;
