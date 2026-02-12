@@ -417,7 +417,7 @@ async function fetchCountyLag(county) {
   const qp = new URLSearchParams({
     path: "/v1/properties",
     Fields: "Address,City,State,ZipFive,inForeclosure,RadarID,County,ForeclosureRecDate,DefaultAsOf",
-    Limit: "1",
+    Limit: "50",
     Purchase: "1"
   });
 
@@ -462,14 +462,14 @@ async function fetchCountyLag(county) {
     return { fips: county.f, lag: null, recDate: null, pubDate: null };
   }
 
-  const prop = properties[0];
-  dbg(`First property keys: ${Object.keys(prop).join(", ")}`);
-  dbg(`Full first property: ${JSON.stringify(prop).slice(0, 500)}`);
+  // Find the most recent ForeclosureRecDate from all returned properties
+  let recDate = null;
+  for (const p of properties) {
+    const d = p.ForeclosureRecDate || p.foreclosureRecDate || null;
+    if (d && (!recDate || d > recDate)) recDate = d;
+  }
 
-  // ForeclosureRecDate = when county recorded the notice
-  const recDate = prop.ForeclosureRecDate || prop.foreclosureRecDate || prop.NoticeRecordingDate || null;
-
-  dbg(`recDate=${recDate}`);
+  dbg(`Most recent ForeclosureRecDate out of ${properties.length} results: ${recDate}`);
 
   // PR API has no "published date" field. Instead, we measure data freshness:
   // Lag = Today - ForeclosureRecDate = how stale PR's latest foreclosure data is
