@@ -410,12 +410,11 @@ async function fetchCountyLag(county) {
     ]
   };
 
-  // Build query params: Fields, Limit, Purchase, Sort
+  // Build query params: Fields, Limit, Purchase
   const qp = new URLSearchParams({
     path: "/v1/properties",
     Fields: "ForeclosureRecDate,ForeclosureStage,Address,County",
     Limit: "1",
-    Sort: "ForeclosureRecDate DESC",
     Purchase: "0"
   });
 
