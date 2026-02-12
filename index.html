@@ -129,7 +129,7 @@
   <div class="setup" id="setupScreen">
     <h2>Connect PropertyRadar</h2>
     <p>
-      Enter your PropertyRadar API token to get started. The tool will automatically check data freshness across 600+ US counties.
+      Enter your PropertyRadar API token to get started. The tool will check data freshness across 621 US counties (100K+ population).
     </p>
     <input type="password" id="setupToken" placeholder="Paste your PropertyRadar API token" />
     <button class="btn btn-primary" onclick="saveToken()">Connect &amp; Start</button>
@@ -231,11 +231,8 @@
 </div>
 
 <script>
-// ─── County Data (5 TEST counties to start — will expand once API works) ─────
+// ─── County Data (621 US counties with 100K+ population, 2024 Census) ─────
 const C=[
-{f:"04013",n:"Maricopa",s:"AZ",p:4673096},{f:"06037",n:"Los Angeles",s:"CA",p:9757179},{f:"12086",n:"Miami-Dade",s:"FL",p:2838461},{f:"48201",n:"Harris",s:"TX",p:5009302},{f:"32003",n:"Clark",s:"NV",p:2398871}
-];
-const C_FULL=[
 {f:"06037",n:"Los Angeles",s:"CA",p:9757179},{f:"17031",n:"Cook",s:"IL",p:5182617},{f:"48201",n:"Harris",s:"TX",p:5009302},{f:"04013",n:"Maricopa",s:"AZ",p:4673096},{f:"06073",n:"San Diego",s:"CA",p:3298799},{f:"06059",n:"Orange",s:"CA",p:3170435},{f:"12086",n:"Miami-Dade",s:"FL",p:2838461},{f:"48113",n:"Dallas",s:"TX",p:2656028},{f:"36047",n:"Kings",s:"NY",p:2617631},{f:"06065",n:"Riverside",s:"CA",p:2529933},
 {f:"32003",n:"Clark",s:"NV",p:2398871},{f:"53033",n:"King",s:"WA",p:2340211},{f:"36081",n:"Queens",s:"NY",p:2316841},{f:"48439",n:"Tarrant",s:"TX",p:2230708},{f:"06071",n:"San Bernardino",s:"CA",p:2214281},{f:"48029",n:"Bexar",s:"TX",p:2127737},{f:"12011",n:"Broward",s:"FL",p:2037472},{f:"06085",n:"Santa Clara",s:"CA",p:1926325},{f:"26163",n:"Wayne",s:"MI",p:1771063},{f:"25017",n:"Middlesex",s:"MA",p:1668956},
 {f:"36061",n:"New York",s:"NY",p:1660664},{f:"06001",n:"Alameda",s:"CA",p:1649060},{f:"06067",n:"Sacramento",s:"CA",p:1611231},{f:"12099",n:"Palm Beach",s:"FL",p:1582055},{f:"12057",n:"Hillsborough",s:"FL",p:1581426},{f:"42101",n:"Philadelphia",s:"PA",p:1573916},{f:"36103",n:"Suffolk",s:"NY",p:1535909},{f:"12095",n:"Orange",s:"FL",p:1533646},{f:"36059",n:"Nassau",s:"NY",p:1392438},{f:"36005",n:"Bronx",s:"NY",p:1384724},
