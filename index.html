@@ -187,8 +187,8 @@
             <th data-sort="state" onclick="setSort('state')">State <span class="sort-arrow">↕</span></th>
             <th data-sort="pop" onclick="setSort('pop')">Population <span class="sort-arrow">↕</span></th>
             <th data-sort="lag" onclick="setSort('lag')" class="active">Lag (Days) <span class="sort-arrow">↓</span></th>
-            <th data-sort="recDate" onclick="setSort('recDate')">Notice Rec. Date <span class="sort-arrow">↕</span></th>
-            <th data-sort="pubDate" onclick="setSort('pubDate')">PR Published <span class="sort-arrow">↕</span></th>
+            <th data-sort="recDate" onclick="setSort('recDate')">Latest Filing Date <span class="sort-arrow">↕</span></th>
+            <th data-sort="pubDate" onclick="setSort('pubDate')">Checked On <span class="sort-arrow">↕</span></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -208,8 +208,8 @@
       <div class="sec-title">Methodology</div>
       <div class="card" style="font-size:.88rem;color:var(--muted);line-height:1.7">
         <p style="margin:0 0 6px"><strong>1.</strong> For each county, the tool pulls the most recent pre-foreclosure filing from PropertyRadar via API.</p>
-        <p style="margin:0 0 6px"><strong>2.</strong> It compares the <strong>Notice Recording Date</strong> (when the county recorded it) vs. the <strong>Published Date</strong> (when PropertyRadar made it available).</p>
-        <p style="margin:0"><strong>3.</strong> Lag = Published Date − Notice Recording Date. A positive value means PropertyRadar took that many days to surface the data after the county recorded it.</p>
+        <p style="margin:0 0 6px"><strong>2.</strong> It checks the <strong>Latest Filing Date</strong> (ForeclosureRecDate) — the county recording date of the newest foreclosure PR has.</p>
+        <p style="margin:0"><strong>3.</strong> Lag = Today − Latest Filing Date. This tells you how stale PR's data is. A lag of 1-2 days = very fresh. A lag of 14+ days = PR is slow to get data for that county.</p>
       </div>
     </div>
   </div>
@@ -463,26 +463,29 @@ async function fetchCountyLag(county) {
   dbg(`First property keys: ${Object.keys(prop).join(", ")}`);
   dbg(`Full first property: ${JSON.stringify(prop).slice(0, 500)}`);
 
-  // ForeclosureRecDate = when county recorded it
-  // We need to figure out the "published" date from the API response
+  // ForeclosureRecDate = when county recorded the notice
   const recDate = prop.ForeclosureRecDate || prop.foreclosureRecDate || prop.NoticeRecordingDate || null;
 
-  // For "published" date, check all likely field names
-  const pubDate = prop.NoticePublishedDate || prop.noticePublishedDate || prop.ForeclosurePublishedDate || null;
+  dbg(`recDate=${recDate}`);
 
-  dbg(`recDate=${recDate}, pubDate=${pubDate}`);
+  // PR API has no "published date" field. Instead, we measure data freshness:
+  // Lag = Today - ForeclosureRecDate = how stale PR's latest foreclosure data is
+  // A lag of 1 means the most recent filing PR has is from yesterday (very fresh)
+  // A lag of 14 means the newest PR has is 2 weeks old (stale)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const checkedDate = today.toISOString().split("T")[0];
 
   let lag = null;
-  if (recDate && pubDate) {
-    const r = new Date(recDate);
-    const p = new Date(pubDate);
-    lag = Math.round((p - r) / 86400000);
-    dbg(`Lag for ${county.n}: ${lag} days`);
+  if (recDate) {
+    const r = new Date(recDate + "T00:00:00");
+    lag = Math.round((today - r) / 86400000);
+    dbg(`Freshness lag for ${county.n}: ${lag} days (latest filing: ${recDate}, checked: ${checkedDate})`);
   } else {
-    dbg(`Cannot compute lag — missing date field(s)`);
+    dbg(`Cannot compute lag — no ForeclosureRecDate`);
   }
 
-  return { fips: county.f, lag, recDate, pubDate };
+  return { fips: county.f, lag, recDate, pubDate: checkedDate };
 }
 
 // ─── Run Check ────────────────────────────────────────────
