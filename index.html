@@ -403,17 +403,20 @@ async function fetchCountyLag(county) {
   //   - Fields, Limit, Purchase, Sort go as QUERY PARAMETERS
   //   - County criterion takes FIPS code, not name
 
+  // Match the exact Criteria format used by PropertyRadar's web app
   const body = {
     Criteria: [
-      { name: "inForeclosure", value: [1] },
-      { name: "County", value: [county.f] }
+      { name: "ForeclosureStage", value: ["Preforeclosure"] },
+      { name: "County", value: [county.f] },
+      { name: "inForeclosure", value: ["1"] },
+      { name: "ForeclosureRecDate", value: ["Last 30 Days"] }
     ]
   };
 
   // Build query params: Fields, Limit, Purchase
   const qp = new URLSearchParams({
     path: "/v1/properties",
-    Fields: "ForeclosureRecDate,ForeclosureStage,Address,County",
+    Fields: "Address,City,State,ZipFive,inForeclosure,RadarID,County,ForeclosureRecDate,DefaultAsOf",
     Limit: "1",
     Purchase: "1"
   });
